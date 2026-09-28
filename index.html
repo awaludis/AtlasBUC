@@ -1,0 +1,1435 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D2B2A">
+<title>Atlas BUC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EE; --panel:#F8FAF8; --panel2:#E6EBE8; --ink:#1D2B2A; --ink2:#50605D; --line:#C9D2CF; --line2:#9AA8A5;
+  --low:#5E8C6A; --mid:#D8A657; --high:#B5483B; --link:#2E5E86; --chip:#E1E7E4; --ok:#3F7D55; --warn:#A8741F; --bad:#B5483B;
+  --manual:#B5483B; --sheet:#D8A657; --app:#5E8C6A; --mixed:#8C7AA6; --unk:#AAB5B2; --focus:#2E5E86;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A19; --panel:#1C2423; --panel2:#232D2B; --ink:#E4EAE7; --ink2:#A3B1AD; --line:#33403D; --line2:#56645F;
+    --low:#6FA67C; --mid:#E0B366; --high:#D0634F; --link:#7FB0DA; --chip:#26302E; --ok:#6FB384; --warn:#E0B366; --bad:#E07A66;
+    --manual:#D0634F; --sheet:#E0B366; --app:#6FA67C; --mixed:#A994C4; --unk:#6B7874; --focus:#7FB0DA;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A19; --panel:#1C2423; --panel2:#232D2B; --ink:#E4EAE7; --ink2:#A3B1AD; --line:#33403D; --line2:#56645F;
+  --low:#6FA67C; --mid:#E0B366; --high:#D0634F; --link:#7FB0DA; --chip:#26302E; --ok:#6FB384; --warn:#E0B366; --bad:#E07A66;
+  --manual:#D0634F; --sheet:#E0B366; --app:#6FA67C; --mixed:#A994C4; --unk:#6B7874; --focus:#7FB0DA;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;font-variation-settings:"wdth" 100}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+a{color:var(--link)}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+/* rail */
+.rail{background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh;align-self:start;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.brand{font-weight:800;font-size:26px;line-height:1;font-variation-settings:"wdth" 64;letter-spacing:-.01em}
+.brand small{display:block;font-size:12.5px;font-weight:400;color:var(--ink2);font-variation-settings:"wdth" 100;margin-top:6px;letter-spacing:0}
+.primary{background:var(--ink);color:var(--bg);border:0;border-radius:6px;padding:9px 14px;font-weight:600;cursor:pointer}
+.primary:hover{opacity:.9}
+.primary[disabled]{opacity:.5;cursor:default}
+.ghost{background:none;border:1px solid var(--line2);border-radius:6px;padding:7px 12px;cursor:pointer}
+.ghost:hover{border-color:var(--ink)}
+.danger{background:none;border:1px solid var(--bad);color:var(--bad);border-radius:6px;padding:7px 12px;cursor:pointer}
+.small{font-size:13px;padding:4px 9px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;justify-content:space-between;align-items:baseline;text-decoration:none;color:var(--ink2);padding:6px 10px;border-radius:5px}
+.nav a:hover{background:var(--panel2);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.nav a .n{font-size:12px;opacity:.8}
+.navgroup{font-size:12px;color:var(--ink2);margin:10px 10px 2px}
+.store{margin-top:auto;font-size:12.5px;color:var(--ink2);border-top:1px solid var(--line);padding-top:10px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.topbar{display:none}
+main{padding:22px 28px 90px;min-width:0}
+.pagehead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:16px}
+h1{margin:0;font-weight:800;font-size:clamp(26px,3.6vw,38px);line-height:1.05;font-variation-settings:"wdth" 70;letter-spacing:-.01em}
+h2{font-size:20px;margin:22px 0 8px;font-variation-settings:"wdth" 80}
+h3{font-size:16px;margin:16px 0 6px}
+.sub{color:var(--ink2);font-size:14px;margin-top:4px}
+.muted{color:var(--ink2)}
+.note{font-size:13.5px;color:var(--ink2);max-width:78ch}
+.stats{display:flex;gap:18px;flex-wrap:wrap}
+.stat b{display:block;font-size:22px;font-weight:700;font-variation-settings:"wdth" 75;line-height:1}
+.stat span{font-size:12.5px;color:var(--ink2)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden}
+.seg button{background:none;border:0;padding:5px 11px;cursor:pointer;font-size:13px;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+input.txt,select.txt,textarea.txt{background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:7px 10px;font-size:14.5px;width:100%;color:var(--ink)}
+textarea.txt{min-height:70px;resize:vertical;line-height:1.45}
+input.txt:focus,select.txt:focus,textarea.txt:focus{border-color:var(--focus);outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--focus) 25%,transparent)}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink2);margin:0 0 4px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin:6px 0 12px;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:5px}
+.grad{display:inline-block;width:80px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--low),var(--mid),var(--high));vertical-align:1px;margin:0 6px}
+.banner{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:14px}
+.banner.warn{border-color:var(--warn)}
+.empty{border:1px dashed var(--line2);border-radius:8px;padding:28px;text-align:left;max-width:640px}
+.empty h2{margin-top:0}
+/* map */
+.district{display:grid;grid-template-columns:190px 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.district:first-of-type{border-top:0}
+.dname{font-size:21px;font-weight:700;line-height:1.1;font-variation-settings:"wdth" 68}
+.dname small{display:block;font-size:12.5px;font-weight:400;color:var(--ink2);font-variation-settings:"wdth" 100;margin-top:4px}
+.blocks{display:flex;flex-wrap:wrap;gap:10px}
+.block{position:relative;background:var(--panel);border:1px solid var(--line2);border-radius:4px;padding:10px 12px 12px;cursor:pointer;text-align:left;min-width:150px;flex:1 1 170px;max-width:300px;border-left:8px solid var(--need)}
+.block:hover{border-color:var(--ink);border-left-color:var(--need)}
+.block .code{font-size:26px;font-weight:800;font-variation-settings:"wdth" 62;line-height:1}
+.block .nm{font-weight:600;font-size:14px;margin:2px 0 8px;line-height:1.25}
+.block .meta{font-size:12.5px;color:var(--ink2);display:flex;justify-content:space-between;gap:8px}
+.bar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:8px;background:var(--chip)}
+.bar span{display:block;height:100%}
+.need{position:absolute;top:9px;right:10px;font-size:13px;font-weight:700;font-variation-settings:"wdth" 75}
+.need small{font-weight:400;color:var(--ink2)}
+.tiny{font-size:11.5px;color:var(--ink2);margin-top:6px}
+/* graph */
+.graphbox{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow-x:auto;padding:8px}
+.graphbox svg{display:block}
+svg text{font-family:"Archivo",system-ui,sans-serif;fill:var(--ink)}
+.node rect.bg{fill:var(--panel);stroke:var(--line2);stroke-width:1}
+.node.ext rect.bg{fill:var(--bg);stroke-dasharray:4 3}
+.node.sel rect.bg{stroke:var(--ink);stroke-width:2.5}
+.node:hover rect.bg{stroke:var(--ink)}
+.node{cursor:pointer}
+.edge{fill:none;stroke:var(--link);stroke-width:1.4;opacity:.8}
+.edge.weak{stroke-dasharray:5 4;opacity:.6}
+.edge.cross{stroke:var(--line2)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+.detail{background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:16px 18px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.detail h3{margin:0 0 2px;font-size:20px;line-height:1.2;font-variation-settings:"wdth" 80}
+.gid{font-weight:800;font-variation-settings:"wdth" 62;font-size:16px;color:var(--ink2)}
+.detail h4,.card h4{margin:14px 0 4px;font-size:13px;font-weight:600;color:var(--ink2)}
+.detail ol,.detail ul{margin:0;padding-left:20px}
+.detail li{margin:2px 0}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{background:var(--chip);border-radius:4px;padding:2px 7px;font-size:13px}
+.chip b{font-variation-settings:"wdth" 70;margin-left:5px}
+.lnk{background:none;border:0;padding:0;color:var(--link);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:inherit;text-align:left}
+.badge{display:inline-block;font-size:11.5px;border-radius:3px;padding:0 6px;border:1px solid var(--line2);color:var(--ink2);vertical-align:1px}
+.badge.draft{border-color:var(--warn);color:var(--warn)}
+.badge.approved{border-color:var(--ok);color:var(--ok)}
+/* tables */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;font-size:13.5px}
+.tablebox table:not(.crud){width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--ink2)}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--panel2)}
+.crud th.col{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-weight:500;padding:8px 4px;font-size:12px;color:var(--ink)}
+.crud td.c{text-align:center;font-weight:700;font-variation-settings:"wdth" 70;min-width:26px;padding:4px 2px}
+.crud td.c.C{background:color-mix(in srgb,var(--link) 28%,transparent)}
+.crud td.c.U{background:color-mix(in srgb,var(--mid) 30%,transparent)}
+.crud td.c.R{color:var(--ink2);font-weight:400}
+.crud tr.sys td{background:var(--chip);font-weight:600}
+.crud th.sysh{font-size:11.5px;text-align:center;border-left:2px solid var(--ink)}
+.crud .bl{border-left:2px solid var(--ink)}
+.crud td.rowh{white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:14px 16px}
+.card h3{margin:0;font-size:17px;font-variation-settings:"wdth" 78}
+.gaps section{margin:0 0 22px}
+.gaps li{margin:3px 0;font-size:14px}
+/* editor */
+.editor{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.form section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-bottom:12px}
+.form section > h2{margin:0 0 10px;font-size:16px;font-variation-settings:"wdth" 85}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px 14px}
+.row{margin-bottom:10px}
+.listed{display:flex;flex-direction:column;gap:6px}
+.li{display:grid;grid-template-columns:26px 1fr auto;gap:6px;align-items:start}
+.li .num{font-weight:700;color:var(--ink2);padding-top:8px;text-align:right;font-variation-settings:"wdth" 70}
+.li .acts{display:flex;gap:2px;padding-top:3px}
+.icon{background:none;border:1px solid transparent;border-radius:4px;cursor:pointer;padding:3px 6px;color:var(--ink2);line-height:1}
+.icon:hover{border-color:var(--line2);color:var(--ink)}
+.io{border:1px solid var(--line);border-radius:6px;padding:8px;display:grid;grid-template-columns:minmax(140px,2fr) minmax(90px,1fr) minmax(180px,1.7fr) auto;gap:6px;align-items:start;background:var(--bg)}
+.io.withtype{grid-template-columns:minmax(140px,2fr) minmax(120px,1.1fr) minmax(90px,1fr) minmax(180px,1.7fr) auto}
+.io .party{display:flex;gap:4px}
+.io .party select{width:auto;flex:0 0 auto}
+.io .party input{flex:1;min-width:70px}
+.conn{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:14px 16px}
+.conn h2{margin:0 0 4px;font-size:16px}
+.conn ul{list-style:none;margin:0;padding:0}
+.conn li{padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.conn li:last-child{border-bottom:0}
+.st{font-weight:700;margin-right:4px}
+.st.ok{color:var(--ok)} .st.warn{color:var(--warn)} .st.bad{color:var(--bad)} .st.ext{color:var(--ink2)}
+.savebar{position:sticky;bottom:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(4px);padding:10px 0;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;z-index:3}
+.err{color:var(--bad);font-size:13.5px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-size:14px;z-index:50;max-width:90vw}
+.searchbox{position:relative}
+.results{position:absolute;z-index:20;background:var(--panel);border:1px solid var(--line2);border-radius:6px;max-height:300px;overflow:auto;width:100%;min-width:260px;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.results button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 10px;cursor:pointer;font-size:13.5px}
+.results button:hover{background:var(--chip)}
+.drafts .card{border-left:6px solid var(--mid)}
+pre.out{white-space:pre-wrap;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:12.5px;max-height:320px;overflow:auto}
+.fab{display:none}
+@media (max-width:1100px){
+  .editor{grid-template-columns:1fr}
+  .conn{position:static;max-height:none}
+  .two{grid-template-columns:1fr}
+  .detail{position:static;max-height:none}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .rail{position:fixed;inset:0 25% 0 0;z-index:40;transform:translateX(-105%);transition:transform .2s;height:100%;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .rail.open{transform:none}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:30}
+  .topbar .brand{font-size:21px}
+  main{padding:16px 14px 90px}
+  .district{grid-template-columns:1fr;gap:8px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .io,.io.withtype{grid-template-columns:1fr 1fr}
+  .io .nm{grid-column:1/-1}
+  .fab{display:block;position:fixed;right:16px;bottom:18px;z-index:35;border-radius:28px;padding:12px 18px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+}
+body.editing .fab{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar"><button class="icon" id="menuBtn" aria-label="Buka menu" style="font-size:20px">☰</button><div class="brand">Atlas BUC</div></div>
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="brand">Atlas BUC<small id="orgName">Pencatatan BUC dari wawancara</small></div>
+    <button class="primary" data-go="#/new">+ BUC baru</button>
+    <nav class="nav" id="nav"></nav>
+    <div class="store" id="storeInfo"><span class="dot" style="background:var(--unk)"></span>Menghubungkan penyimpanan…</div>
+  </aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+<button class="primary fab" data-go="#/new">+ BUC</button>
+<datalist id="dl-domains"></datalist><datalist id="dl-pas"></datalist><datalist id="dl-actors"></datalist><datalist id="dl-arts"></datalist><datalist id="dl-parties"></datalist><datalist id="dl-apps"></datalist>
+<script>
+(function(){
+'use strict';
+// ================= utils =================
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').trim().replace(/\s+/g, ' ').toLowerCase();
+const uid = () => 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clone = o => JSON.parse(JSON.stringify(o));
+const nowIso = () => new Date().toISOString();
+function toast(msg, ms=2600){ const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), ms); }
+function ratio(a, b){ // similarity 0..1 (Levenshtein based)
+  a = norm(a); b = norm(b); if(!a || !b) return 0; if(a===b) return 1;
+  const m=a.length, n=b.length; let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1)); } prev=cur; }
+  return 1 - prev[n]/Math.max(m,n);
+}
+const SUFFIX = new Set(['form','sheet','checklist','slip','register','record','certificate','note','letter','list','card','label','document','file','log','book']);
+const ENTITY_TYPES = ['Transaction Data','Master Data','Reference Data','Approval Record','Attachment','Status History','Log Record','Report Record'];
+const SHARED_TYPES = new Set(['master data','reference data']);
+const DEADEND_OK = new Set(['report record','log record','status history','attachment']);
+const SUPPORT = ['Manual','Spreadsheet','Application','Mixed','Not performed','Unknown'];
+const SUP_LABEL = {Manual:'Manual', Spreadsheet:'Spreadsheet', Application:'Aplikasi', Mixed:'Campuran', 'Not performed':'Belum dijalankan', Unknown:'Belum diketahui'};
+const SUP_VAR = {Manual:'--manual', Spreadsheet:'--sheet', Application:'--app', Mixed:'--mixed', 'Not performed':'--manual', Unknown:'--unk'};
+const SUP_W = {Manual:1, 'Not performed':1, Spreadsheet:.7, Mixed:.5, Unknown:.5, Application:0};
+const REVIEW = {draft:'Draf', reviewed:'Ditinjau', approved:'Disetujui'};
+const seqOf = code => { const m = /-(\d+)$/.exec(code || ''); return m ? +m[1] : 999; };
+
+// ================= state =================
+const S = {
+  mode: 'loading',            // loading | shared | local
+  bucs: new Map(),            // docId -> buc
+  settings: {org:'', domains:{}, doc2ent:{}},
+  caps: {db:null, user:null, sample:null, downloads:null},
+  me: {id:null, name:''}, names: {}, canWrite: true,
+  repo: null, layer: 'all', aiDrafts: [], editing: null,
+};
+window.__ATLAS = S; // debugging aid
+
+// ================= storage =================
+const LS_KEY = 'atlas-buc-v1';
+const Store = {
+  listeners: [],
+  onChange(fn){ this.listeners.push(fn); },
+  emit(){ S.repo = null; this.listeners.forEach(f => f()); },
+  loadLocal(){
+    try{ const raw = localStorage.getItem(LS_KEY); if(raw){ const d = JSON.parse(raw); S.bucs = new Map(Object.entries(d.bucs || {})); S.settings = Object.assign({org:'',domains:{},doc2ent:{}}, d.settings || {}); } }catch(e){}
+  },
+  persistLocal(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify({bucs:Object.fromEntries(S.bucs), settings:S.settings})); }catch(e){ toast('Penyimpanan lokal penuh atau tidak tersedia.'); }
+  },
+  async init(){
+    const hasClaude = typeof window.claude === 'object' && window.claude && typeof window.claude.use === 'function';
+    if(!hasClaude){ this.useLocal(); return; }
+    const [db, user, sample, downloads] = await Promise.all(['db','user','sample','downloads'].map(n => window.claude.use(n).catch(()=>null)));
+    S.caps = {db, user, sample, downloads};
+    if(user){
+      try{ const me = await user.me(); S.me = {id: me.id, name: me.name}; }catch(e){}
+      try{ const c = await user.can('data.write'); if(c === false) S.canWrite = false; }catch(e){}
+    }
+    if(!db){ this.useLocal(); return; }
+    S.mode = 'shared';
+    db.collection('bucs').onSnapshot(snap => {
+      const m = new Map(); snap.docs.forEach(d => { if(d.exists) m.set(d.id, clone(d.data())); });
+      S.bucs = m; this.emit(); resolveNames();
+    }, err => { if(err && err.code === 'revoked'){ S.canWrite = false; } toast('Sinkronisasi terputus: ' + (err && err.code || 'galat')); });
+    db.doc('settings/main').onSnapshot(snap => {
+      S.settings = Object.assign({org:'',domains:{},doc2ent:{}}, snap.exists ? clone(snap.data()) : {});
+      this.emit();
+    }, ()=>{});
+    this.emit();
+  },
+  useLocal(){ S.mode = 'local'; this.loadLocal(); this.emit(); registerPWA(); },
+  async saveBuc(id, buc){
+    buc.updatedAt = nowIso(); if(S.me.id) buc.updatedBy = S.me.id;
+    if(!buc.createdAt){ buc.createdAt = buc.updatedAt; if(S.me.id) buc.createdBy = S.me.id; }
+    if(S.mode === 'shared'){
+      try{ await S.caps.db.collection('bucs').doc(id).set(buc); }
+      catch(e){ return this.fail(e); }
+      S.bucs.set(id, buc); this.emit(); return true;
+    }
+    S.bucs.set(id, buc); this.persistLocal(); this.emit(); return true;
+  },
+  async deleteBuc(id){
+    if(S.mode === 'shared'){ try{ await S.caps.db.collection('bucs').doc(id).delete(); }catch(e){ return this.fail(e); } }
+    S.bucs.delete(id); if(S.mode==='local') this.persistLocal(); this.emit(); return true;
+  },
+  async saveSettings(patch){
+    const next = Object.assign({}, S.settings, patch);
+    if(S.mode === 'shared'){ try{ await S.caps.db.doc('settings/main').set(next); }catch(e){ return this.fail(e); } }
+    S.settings = next; if(S.mode==='local') this.persistLocal(); this.emit(); return true;
+  },
+  async bulk(ops){ // [{id, buc}|{id, del:true}] sequential (one write per doc)
+    let ok = 0;
+    for(const op of ops){
+      if(op.del){ if(await this.deleteBuc(op.id)) ok++; }
+      else if(await this.saveBuc(op.id, op.buc)) ok++;
+    }
+    return ok;
+  },
+  fail(e){
+    const code = e && e.code;
+    if(code === 'invalid_argument'){ S.canWrite = false; toast('Anda hanya punya akses baca pada data bersama ini.'); }
+    else if(code === 'quota_exceeded') toast('Kapasitas penyimpanan penuh (maks. 5.000 dokumen). Hapus BUC yang tidak dipakai.');
+    else if(code === 'resource_exhausted') toast('Terlalu banyak penyimpanan sekaligus. Coba lagi sebentar lagi.');
+    else toast('Gagal menyimpan (' + (code || 'galat') + '). Coba lagi.');
+    return false;
+  }
+};
+async function resolveNames(){
+  const u = S.caps.user; if(!u) return;
+  const ids = [...new Set([...S.bucs.values()].flatMap(b => [b.createdBy, b.updatedBy]).filter(Boolean))];
+  if(!ids.length) return;
+  try{ const ps = await u.profiles(ids); for(const id of ids) S.names[id] = (ps[id] && ps[id].name) || ''; }catch(e){}
+}
+const personName = id => id ? (S.names[id] || (id === S.me.id ? (S.me.name || 'Anda') : 'Rekan')) : '';
+
+function registerPWA(){
+  if(!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+  if(typeof window.claude === 'object') return;
+  if(!document.querySelector('link[rel=manifest]')){ const l=document.createElement('link'); l.rel='manifest'; l.href='manifest.webmanifest'; document.head.appendChild(l); }
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+// ================= model helpers =================
+function blankBuc(layer){
+  return {code:'', name:'', layer: layer || 'manual', domain:'', pa:'', paCode:'', actor:'', goal:'', startEvent:'',
+    flow:[''], inputs:[], outputs:[], rules:[], support:'Manual', supportApp:'', pains:[], replaces:[],
+    source:{interviewee:'', role:'', date:new Date().toISOString().slice(0,10)}, review:'draft'};
+}
+function normalizeBuc(b){
+  const x = Object.assign(blankBuc(b.layer), b);
+  x.flow = (x.flow || []).filter(s => String(s).trim()); x.rules = (x.rules||[]).filter(s=>String(s).trim()); x.pains = (x.pains||[]).filter(s=>String(s).trim());
+  const io = r => ({name:String(r.name||'').trim(), type:r.type||'', status:String(r.status||'').trim(), party:String(r.party||'').trim(), filed:!!r.filed});
+  x.inputs = (x.inputs||[]).map(io).filter(r=>r.name); x.outputs = (x.outputs||[]).map(io).filter(r=>r.name);
+  x.replaces = (x.replaces||[]).filter(r=>r.document && r.entity);
+  x.paCode = String(x.paCode||'').toUpperCase(); x.code = String(x.code||'').toUpperCase();
+  return x;
+}
+function deriveCode(name, used){
+  const w = (String(name).toUpperCase().match(/[A-Z]+/g) || []);
+  const c = [];
+  if(w.length >= 3) c.push(w.slice(0,3).map(x=>x[0]).join(''));
+  if(w.length === 2){ c.push(w[0].slice(0,2)+w[1][0]); c.push(w[0][0]+w[1].slice(0,2)); }
+  if(w.length){ const cons = w[0][0] + w[0].slice(1).replace(/[AEIOU]/g,''); c.push(cons.slice(0,3), w[0].slice(0,3)); }
+  for(const x of c) if(x.length===3 && !used.has(x)) return x;
+  const base=(w[0]||'PAX').slice(0,2); for(const ch of 'XYZQWKJV') if(!used.has(base+ch)) return base+ch;
+  return 'P'+used.size;
+}
+function paCodeMap(){ // pa name(norm) -> code (most common)
+  const cnt = {}; for(const b of S.bucs.values()){ if(!b.pa || !b.paCode) continue; const k = norm(b.pa); (cnt[k] = cnt[k] || {})[b.paCode] = ((cnt[k]||{})[b.paCode] || 0) + 1; }
+  const m = {}; for(const k in cnt) m[k] = Object.entries(cnt[k]).sort((a,b)=>b[1]-a[1])[0][0]; return m;
+}
+function nextCode(code, excludeId){
+  let max = 0; for(const [id,b] of S.bucs) if(id!==excludeId && (b.code||'').startsWith(code+'-')) max = Math.max(max, seqOf(b.code));
+  return code + '-' + String(max+1).padStart(2,'0');
+}
+function vocab(){
+  const v = {domains:{}, pas:{}, actors:{}, arts:{}, parties:{}, apps:{}};
+  const add = (o,k,extra) => { if(!k) return; const n = norm(k); o[n] = o[n] || {name:k, count:0, ...extra}; o[n].count++; return o[n]; };
+  for(const b of S.bucs.values()){
+    add(v.domains, b.domain); const p = add(v.pas, b.pa, {code:b.paCode, domain:b.domain}); if(p && !p.code) p.code=b.paCode;
+    add(v.actors, b.actor);
+    for(const r of [...(b.inputs||[]), ...(b.outputs||[])]){
+      const a = add(v.arts, r.name, {statuses:new Set(), types:new Set(), layers:new Set()}); if(!a) continue;
+      if(r.status) a.statuses.add(r.status); if(r.type) a.types.add(r.type); a.layers.add(b.layer);
+      if(r.party) add(v.parties, r.party);
+    }
+    if(b.support==='Application' && b.supportApp) add(v.apps, b.supportApp);
+  }
+  return v;
+}
+
+// ================= analysis engine (port of buc-integrator) =================
+function crudOf(b){
+  const m = new Map(); const inN = new Set((b.inputs||[]).map(x=>norm(x.name)));
+  for(const x of [...(b.inputs||[]), ...(b.outputs||[])]){ const k = norm(x.name); if(!m.has(k)) m.set(k, {name:x.name, type:x.type||'', kind:b.layer==='computerized'?'entity':'document', u:new Set()}); const e=m.get(k); if(!e.type && x.type) e.type=x.type; }
+  for(const x of b.inputs||[]) m.get(norm(x.name)).u.add('R');
+  for(const x of b.outputs||[]){
+    const e = m.get(norm(x.name));
+    if(x.filed){ e.u.add('A'); continue; }
+    if(/^(cancel|void|delet)/i.test(x.status||'')) e.u.add('D');
+    e.u.add(inN.has(norm(x.name)) ? 'U' : 'C');
+  }
+  return [...m.values()].map(e => ({...e, usage:'CRUDA'.split('').filter(c=>e.u.has(c)).join('')}));
+}
+function analyze(){
+  if(S.repo) return S.repo;
+  const all = [...S.bucs.entries()].map(([id,b]) => ({id, ...normalizeBuc(b)}));
+  const bucs = all.filter(b => S.layer==='all' || b.layer===S.layer);
+  const byId = Object.fromEntries(bucs.map(b=>[b.id,b]));
+  const doc2ent = Object.assign({}, S.settings.doc2ent || {});
+  for(const b of all) for(const r of b.replaces) doc2ent[r.document] = r.entity;
+  const d2e = {}; for(const k in doc2ent) d2e[norm(k)] = doc2ent[k];
+  const st = x => norm(x.status);
+  const typeOf = x => norm(x.type);
+  const gaps = {status_mismatch:[], no_producer:[], no_master_owner:[], dead_end:[], isolated:[], incomplete:[], naming:[], unmapped:[]};
+  // output index
+  const outIdx = new Map();
+  for(const b of bucs) for(const o of b.outputs){ if(o.party || o.filed) continue; const k = b.layer+'|'+norm(o.name); if(!outIdx.has(k)) outIdx.set(k, []); outIdx.get(k).push({b, o}); }
+  const links = []; const has = new Set();
+  const addLink = (from, to, label, kind, layer) => { const k = from+'>'+to; if(from===to || has.has(k)) return; has.add(k); links.push({from, to, label, kind, layer}); };
+  for(const b of bucs){
+    for(const i of b.inputs){
+      if(i.party || SHARED_TYPES.has(typeOf(i))) continue;
+      const cands = (outIdx.get(b.layer+'|'+norm(i.name)) || []).filter(c => c.b.id !== b.id);
+      if(!cands.length) continue;
+      const exact = st(i) ? cands.filter(c => st(c.o) === st(i)) : [];
+      const compat = exact.length ? exact : cands.filter(c => !st(i) || !st(c.o));
+      if(!compat.length){ gaps.status_mismatch.push({buc:b.id, artifact:i.name, needs:i.status, available:[...new Set(cands.map(c=>c.o.status||''))]}); continue; }
+      let prods = [...new Set(compat.map(c=>c.b.id))];
+      let kind = (exact.length || prods.length===1) ? 'matched' : 'ambiguous';
+      if(kind==='ambiguous'){
+        const before = prods.filter(p => norm(byId[p].pa)===norm(b.pa) && seqOf(byId[p].code) < seqOf(b.code));
+        if(before.length){ prods = [before.sort((x,y)=>seqOf(byId[y].code)-seqOf(byId[x].code))[0]]; kind='sequence'; }
+      }
+      for(const p of prods){ const o = compat.find(c=>c.b.id===p).o; const s = i.status || o.status; addLink(p, b.id, i.name + (s ? ' ['+s+']' : ''), kind, b.layer); }
+    }
+  }
+  const externals = [];
+  for(const b of bucs){
+    for(const i of b.inputs) if(i.party) externals.push({buc:b.id, dir:'in', party:i.party, artifact:i.name});
+    for(const o of b.outputs) if(o.party) externals.push({buc:b.id, dir:'out', party:o.party, artifact:o.name});
+  }
+  // gaps: producers
+  const produced = {}; for(const b of bucs){ produced[b.layer] = produced[b.layer] || new Set(); b.outputs.forEach(o => produced[b.layer].add(norm(o.name))); }
+  const np = new Map();
+  for(const b of bucs) for(const i of b.inputs){
+    if(i.party || (produced[b.layer]||new Set()).has(norm(i.name))) continue;
+    const key = (SHARED_TYPES.has(typeOf(i)) ? 'no_master_owner' : 'no_producer') + '|' + norm(i.name);
+    if(!np.has(key)) np.set(key, {key: key.split('|')[0], artifact:i.name, used_by:[]});
+    np.get(key).used_by.push(b.id);
+  }
+  for(const it of np.values()){
+    if(it.key==='no_producer'){
+      const asis = all.filter(x => x.layer==='manual' && x.outputs.some(o => norm(d2e[norm(o.name)]||'')===norm(it.artifact))).map(x=>x.id);
+      if(asis.length) it.as_is = asis;
+    }
+    gaps[it.key].push(it);
+  }
+  const de = new Map();
+  for(const b of bucs) for(const o of b.outputs){
+    if(o.party || o.filed || DEADEND_OK.has(typeOf(o)) || SHARED_TYPES.has(typeOf(o))) continue;
+    if(b.inputs.some(i => norm(i.name)===norm(o.name) && st(i)===st(o))) continue;
+    const used = bucs.some(x => x.layer===b.layer && x.id!==b.id && x.inputs.some(i => norm(i.name)===norm(o.name) && (!st(i) || !st(o) || st(i)===st(o))));
+    if(used) continue;
+    const label = o.name + (o.status ? ' ['+o.status+']' : '');
+    if(!de.has(label)) de.set(label, {artifact:label, from:[]});
+    de.get(label).from.push(b.id);
+  }
+  gaps.dead_end = [...de.values()];
+  const linked = new Set([...links.flatMap(l=>[l.from,l.to]), ...externals.map(e=>e.buc)]);
+  for(const b of bucs){
+    if(!linked.has(b.id)) gaps.isolated.push({buc:b.id});
+    const miss = [];
+    if(!b.domain) miss.push('domain'); if(!b.pa) miss.push('process area'); if(!b.actor) miss.push('aktor'); if(!b.goal) miss.push('tujuan');
+    if(!b.outputs.length) miss.push('output'); if(!b.flow.length) miss.push('alur utama');
+    if(b.layer==='computerized' && [...b.inputs, ...b.outputs].some(r=>!r.type)) miss.push('tipe entity');
+    if(miss.length) gaps.incomplete.push({buc:b.id, missing:miss});
+  }
+  // catalog
+  const cat = new Map();
+  for(const b of bucs) for(const a of crudOf(b)){
+    const k = norm(a.name); if(!cat.has(k)) cat.set(k, {name:a.name, kind:a.kind, type:a.type, used_by:[]});
+    const c = cat.get(k); if(!c.type && a.type) c.type = a.type; c.used_by.push({buc:b.id, usage:a.usage});
+  }
+  if(all.some(b=>b.layer==='computerized')){
+    for(const c of cat.values()) if(c.kind==='document' && !d2e[norm(c.name)]) gaps.unmapped.push({document:c.name, used_by:c.used_by.map(u=>u.buc)});
+  }
+  // naming suggestions
+  const similar = (names, label) => {
+    const arr = [...new Set(names.filter(Boolean))].sort();
+    for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++){
+      const a=arr[i], b=arr[j]; if(norm(a)===norm(b)){ gaps.naming.push({cat:label, a, b, r:1}); continue; }
+      if(d2e[norm(a)] && norm(d2e[norm(a)])===norm(b) || d2e[norm(b)] && norm(d2e[norm(b)])===norm(a)) continue;
+      const r = ratio(a,b); const [s,l] = [norm(a),norm(b)].sort((x,y)=>x.length-y.length);
+      const extra = l.split(' ').filter(w=>!s.split(' ').includes(w));
+      const suf = l.startsWith(s) && extra.length && extra.every(w=>SUFFIX.has(w));
+      if(r>=0.88 || suf) gaps.naming.push({cat:label, a, b, r:Math.round(r*100)/100});
+    }
+  };
+  similar([...cat.values()].map(c=>c.name), 'dokumen/entity');
+  similar(bucs.map(b=>b.pa), 'process area'); similar(bucs.map(b=>b.actor), 'aktor'); similar(bucs.map(b=>b.domain), 'domain');
+  // process areas
+  const codeMap = {}; const used = new Set();
+  for(const b of bucs){ const k = norm(b.pa || 'Tanpa area'); if(b.paCode && !codeMap[k]){ codeMap[k] = b.paCode; used.add(b.paCode); } }
+  const gapHits = {}; const hit = id => gapHits[id] = (gapHits[id]||0) + 1;
+  gaps.status_mismatch.forEach(x=>hit(x.buc)); gaps.isolated.forEach(x=>hit(x.buc)); gaps.incomplete.forEach(x=>hit(x.buc));
+  gaps.no_producer.forEach(x=>x.used_by.forEach(hit)); gaps.dead_end.forEach(x=>x.from.forEach(hit));
+  const pas = new Map();
+  for(const b of bucs){
+    const k = norm(b.pa || 'Tanpa area');
+    if(!pas.has(k)){ if(!codeMap[k]){ codeMap[k] = deriveCode(b.pa||'Tanpa area', used); used.add(codeMap[k]); }
+      pas.set(k, {key:k, name:b.pa || 'Tanpa area', code:codeMap[k], domains:{}, bucs:[], support:{}, pains:0, gaps:0, actors:new Set(), layers:new Set()}); }
+    const p = pas.get(k); p.bucs.push(b.id); p.domains[b.domain||'Tanpa domain'] = (p.domains[b.domain||'Tanpa domain']||0)+1;
+    p.support[b.support||'Unknown'] = (p.support[b.support||'Unknown']||0)+1; p.pains += b.pains.length; p.gaps += gapHits[b.id]||0;
+    if(b.actor) p.actors.add(b.actor); p.layers.add(b.layer);
+  }
+  for(const p of pas.values()){
+    p.domain = Object.entries(p.domains).sort((a,b)=>b[1]-a[1])[0][0];
+    const n = p.bucs.length; const gr = Object.entries(p.support).reduce((s,[k,v])=>s+(SUP_W[k]??.5)*v,0)/n;
+    p.need = Math.round(70*gr + 30*Math.min(1, p.pains/(1.5*n)));
+    p.bucs.sort((a,b)=>seqOf(byId[a].code)-seqOf(byId[b].code) || String(byId[a].code).localeCompare(byId[b].code));
+  }
+  const paOf = id => byId[id] ? pas.get(norm(byId[id].pa || 'Tanpa area')) : undefined;
+  // candidate systems (data-class affinity)
+  const W = {C:3, U:2, D:2, R:1, A:0};
+  const dclass = n => d2e[norm(n)] || n;
+  const touch = new Map(); const creators = new Map(); const dtype = {};
+  for(const c of cat.values()){
+    const dc = norm(dclass(c.name)); const dn = dclass(c.name);
+    dtype[dc] = dtype[dc] || (cat.get(dc) && cat.get(dc).type) || c.type;
+    const shared = SHARED_TYPES.has(norm(dtype[dc]));
+    for(const u of c.used_by){
+      const pk = paOf(u.buc).key;
+      if(u.usage.includes('C')){ if(!creators.has(dc)) creators.set(dc, {name:dn, pas:new Set()}); creators.get(dc).pas.add(pk); }
+      if(shared) continue;
+      const w = Math.max(...u.usage.split('').map(ch=>W[ch]??1), 0);
+      if(!touch.has(pk)) touch.set(pk, new Map()); const t = touch.get(pk); t.set(dc, Math.max(t.get(dc)||0, w));
+    }
+  }
+  const parent = {}; for(const k of pas.keys()) parent[k] = k;
+  const find = x => { while(parent[x]!==x){ parent[x]=parent[parent[x]]; x=parent[x]; } return x; };
+  const aff = (x,y) => { const tx = touch.get(x)||new Map(), ty = touch.get(y)||new Map(); let s=0, any=false;
+    for(const [d,wx] of tx){ if(!ty.has(d)) continue; any=true; const wy=ty.get(d); s += (wx>=2&&wy>=2)?3:((wx===3||wy===3)?.5:1); }
+    if(!any) return 0; const sum = m => [...m.values()].reduce((a,b)=>a+b,0); return s/Math.max(1, Math.min(sum(tx), sum(ty))); };
+  const keys = [...pas.keys()].sort(); const pairs = [];
+  for(let i=0;i<keys.length;i++) for(let j=i+1;j<keys.length;j++) pairs.push([aff(keys[i],keys[j]), keys[i], keys[j]]);
+  pairs.sort((a,b)=>b[0]-a[0]); const TH = S.settings.affinity || 0.3;
+  for(const [sc,x,y] of pairs) if(sc>=TH) parent[find(x)] = find(y);
+  const groups = new Map(); for(const k of pas.keys()){ const r = find(k); if(!groups.has(r)) groups.set(r, []); groups.get(r).push(k); }
+  const systems = []; let si = 0;
+  const domOrder = d => (S.settings.domains[d] && S.settings.domains[d].order) || 999;
+  for(const members of [...groups.values()].sort((a,b)=>Math.min(...a.map(k=>domOrder(pas.get(k).domain)))-Math.min(...b.map(k=>domOrder(pas.get(k).domain))) || a[0].localeCompare(b[0]))){
+    const id = 'SYS-' + String(++si).padStart(2,'0');
+    members.sort((a,b)=>pas.get(a).code.localeCompare(pas.get(b).code));
+    members.forEach(k => pas.get(k).system = id);
+    const owns = [...creators.values()].filter(c => members.some(m=>c.pas.has(m))).map(c=>c.name).sort();
+    systems.push({id, members, owns, reads:[]});
+  }
+  const ownerSys = {}; for(const [dc,c] of creators){ const pk=[...c.pas].sort()[0]; ownerSys[dc] = pas.get(pk).system; }
+  for(const sy of systems){
+    const rf = {};
+    for(const k of sy.members) for(const bid of pas.get(k).bucs) for(const a of crudOf(byId[bid])){ const dc = norm(dclass(a.name)); const o = ownerSys[dc]; if(o && o!==sy.id){ (rf[o] = rf[o] || new Set()).add(dclass(a.name)); } }
+    sy.reads = Object.entries(rf).map(([s,v])=>({system:s, items:[...v].sort()}));
+  }
+  // domains
+  const doms = new Map();
+  for(const p of pas.values()){ if(!doms.has(p.domain)) doms.set(p.domain, []); doms.get(p.domain).push(p); }
+  const domains = [...doms.entries()].map(([name, ps]) => ({name, group:(S.settings.domains[name]||{}).group||'', order:domOrder(name), pas:ps.sort((a,b)=>b.need-a.need)})).sort((a,b)=>a.order-b.order || a.name.localeCompare(b.name));
+  S.repo = {all, bucs, byId, links, externals, gaps, cat, pas, paOf, systems, domains, dclass, d2e};
+  return S.repo;
+}
+
+// ================= router & shell =================
+const NAV = [
+  ['Lihat', null],
+  ['#/', 'Peta lanskap', 'map'],
+  ['#/flow', 'Alur antar-area', 'flow'],
+  ['#/bucs', 'Daftar BUC', 'bucs'],
+  ['Kerjakan', null],
+  ['#/interview', 'Wawancara + AI', 'interview'],
+  ['#/gaps', 'Celah', 'gaps'],
+  ['#/glossary', 'Glosarium', 'glossary'],
+  ['Analisis', null],
+  ['#/crud', 'Matriks CRUD', 'crud'],
+  ['#/systems', 'Kandidat sistem', 'systems'],
+  ['#/data', 'Ekspor & pengaturan', 'data'],
+];
+function parseRoute(){
+  const h = location.hash.replace(/^#/, '') || '/';
+  const parts = h.split('/').filter(Boolean).map(decodeURIComponent);
+  return {name: parts[0] || 'map', args: parts.slice(1)};
+}
+function go(hash){ if(location.hash === hash) render(); else location.hash = hash; }
+function renderNav(){
+  const r = parseRoute(); const repo = analyze();
+  const gapCount = ['status_mismatch','no_producer','incomplete','isolated'].reduce((s,k)=>s+repo.gaps[k].length,0);
+  const counts = {bucs: S.bucs.size, gaps: gapCount || '', interview: S.aiDrafts.length || ''};
+  $('#nav').innerHTML = NAV.map(n => n[1]===null ? `<div class="navgroup">${n[0]}</div>` :
+    `<a href="${n[0]}" ${(r.name===n[2] || (n[2]==='map' && r.name==='area')) ? 'aria-current="page"':''}><span>${n[1]}</span><span class="n">${counts[n[2]] ?? ''}</span></a>`).join('');
+  $('#orgName').textContent = S.settings.org ? S.settings.org : 'Pencatatan BUC dari wawancara';
+  const si = $('#storeInfo');
+  if(S.mode==='shared') si.innerHTML = `<span class="dot" style="background:var(--ok)"></span>Tersimpan bersama untuk tim${S.canWrite?'':' (hanya baca)'}${S.me.name ? `<br><span>Masuk sebagai ${esc(S.me.name)}</span>`:''}`;
+  else if(S.mode==='local') si.innerHTML = `<span class="dot" style="background:var(--warn)"></span>Tersimpan di perangkat ini saja. Pakai ekspor untuk berbagi.`;
+  else si.innerHTML = `<span class="dot" style="background:var(--unk)"></span>Menghubungkan penyimpanan…`;
+}
+let editorGuard = null;
+function render(){
+  if(editorGuard && !editorGuard()) return;
+  const r = parseRoute();
+  $('#rail').classList.remove('open');
+  document.body.classList.toggle('editing', r.name==='new' || r.name==='edit');
+  renderNav(); fillDatalists();
+  const main = $('#main');
+  if(S.mode==='loading'){ main.innerHTML = `<p class="muted">Memuat data…</p>`; return; }
+  const V = {map:viewMap, flow:viewFlow, area:viewArea, bucs:viewList, new:viewEditor, edit:viewEditor, interview:viewInterview, gaps:viewGaps, glossary:viewGlossary, crud:viewCrud, systems:viewSystems, data:viewData};
+  (V[r.name] || viewMap)(main, r.args, r.name);
+  if(r.name!=='area') main.focus({preventScroll:true});
+}
+function fillDatalists(){
+  const v = vocab(); const opt = arr => arr.sort((a,b)=>b.count-a.count).map(x=>`<option value="${esc(x.name)}">`).join('');
+  $('#dl-domains').innerHTML = opt(Object.values(v.domains));
+  $('#dl-pas').innerHTML = Object.values(v.pas).sort((a,b)=>b.count-a.count).map(x=>`<option value="${esc(x.name)}">${esc(x.code||'')}</option>`).join('');
+  $('#dl-actors').innerHTML = opt(Object.values(v.actors));
+  $('#dl-arts').innerHTML = opt(Object.values(v.arts));
+  $('#dl-parties').innerHTML = opt(Object.values(v.parties));
+  $('#dl-apps').innerHTML = opt(Object.values(v.apps));
+  S.vocab = v;
+}
+function layerSeg(){
+  return `<div class="seg" role="group" aria-label="Lapisan">${[['all','Semua'],['manual','As-is (manual)'],['computerized','To-be (aplikasi)']].map(([k,l])=>`<button data-layer="${k}" aria-pressed="${S.layer===k}">${l}</button>`).join('')}</div>`;
+}
+function needColor(v){
+  const cs = getComputedStyle(document.documentElement); const lo=cs.getPropertyValue('--low').trim(), mi=cs.getPropertyValue('--mid').trim(), hi=cs.getPropertyValue('--high').trim();
+  return v<50 ? `color-mix(in srgb, ${mi} ${v*2}%, ${lo})` : `color-mix(in srgb, ${hi} ${(v-50)*2}%, ${mi})`;
+}
+function supportBar(sup){ const n = Object.values(sup).reduce((a,b)=>a+b,0)||1;
+  return `<div class="bar" aria-hidden="true">${SUPPORT.filter(k=>sup[k]).map(k=>`<span title="${SUP_LABEL[k]}: ${sup[k]}" style="width:${sup[k]/n*100}%;background:var(${SUP_VAR[k]})"></span>`).join('')}</div>`; }
+function head(title, sub, right=''){ return `<div class="pagehead"><div><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:''}</div>${right}</div>`; }
+const bucLabel = b => `${esc(b.code || '—')} ${esc(b.name || '(tanpa nama)')}`;
+const bucLink = id => { const b = S.repo && S.repo.byId[id] || S.bucs.get(id); return b ? `<button class="lnk" data-open="${id}">${esc(b.code||'—')}</button>` : '—'; };
+
+// ================= graph layout =================
+function layered(ids, edges){
+  const adj = {}; ids.forEach(n=>adj[n]=[]);
+  const E = edges.filter(e=>adj[e.from] && adj[e.to] && e.from!==e.to);
+  E.forEach(e=>adj[e.from].push(e));
+  const vis = {}, keep = [];
+  const dfs = n => { vis[n]=1; for(const e of adj[n]){ if(vis[e.to]===1) continue; keep.push(e); if(!vis[e.to]) dfs(e.to); } vis[n]=2; };
+  [...ids].sort().forEach(n=>{ if(!vis[n]) dfs(n); });
+  const rank = {}; ids.forEach(n=>rank[n]=0);
+  for(let it=0; it<ids.length; it++){ let ch=false; keep.forEach(e=>{ if(rank[e.to] < rank[e.from]+1){ rank[e.to]=rank[e.from]+1; ch=true; } }); if(!ch) break; }
+  ids.forEach(n=>{ if(keep.some(e=>e.to===n)) return; const t = keep.filter(e=>e.from===n).map(e=>rank[e.to]); if(t.length) rank[n] = Math.max(0, Math.min(...t)-1); });
+  const cols = {}; ids.forEach(n=>(cols[rank[n]] = cols[rank[n]] || []).push(n));
+  const order = {};
+  Object.keys(cols).map(Number).sort((a,b)=>a-b).forEach((r,ri)=>{
+    const col = cols[r];
+    const bary = n => { const ps = E.filter(e=>e.to===n && order[e.from]!==undefined).map(e=>order[e.from]); return ps.length ? ps.reduce((a,b)=>a+b)/ps.length : 999; };
+    if(ri>0) col.sort((a,b)=>bary(a)-bary(b) || a.localeCompare(b)); else col.sort();
+    col.forEach((n,i)=>order[n]=i);
+  });
+  return {rank, order, cols};
+}
+function wrapText(t, w, max){ const cpl = Math.floor(w/6.4), words = String(t).split(' '), lines = [''];
+  for(const wd of words){ if((lines[lines.length-1]+' '+wd).trim().length > cpl){ if(lines.length===max){ lines[max-1] = lines[max-1].replace(/.?$/, '…'); break; } lines.push(wd); } else lines[lines.length-1] = (lines[lines.length-1]+' '+wd).trim(); }
+  return lines; }
+function graphSVG(nodes, edges, opt={}){
+  const W=opt.w||200, H=opt.h||58, GX=opt.gx||70, GY=opt.gy||18;
+  if(!nodes.length) return '<p class="muted" style="padding:10px">Belum ada yang bisa digambar.</p>';
+  const L = layered(nodes.map(n=>n.id), edges);
+  let maxR=0, maxO=0; nodes.forEach(n=>{ maxR=Math.max(maxR,L.rank[n.id]); maxO=Math.max(maxO,(L.cols[L.rank[n.id]]||[]).length-1); });
+  const colH = r => (L.cols[r]||[]).length*(H+GY)-GY, totalH = (maxO+1)*(H+GY)-GY;
+  const pos = {}; nodes.forEach(n=>{ const r=L.rank[n.id], o=L.order[n.id]; pos[n.id] = {x:10+r*(W+GX), y:10+(totalH-colH(r))/2+o*(H+GY)}; });
+  const back = edges.some(e=>pos[e.from]&&pos[e.to]&&pos[e.to].x<=pos[e.from].x&&e.from!==e.to);
+  const width = 20+(maxR+1)*(W+GX)-GX, height = 20+totalH+(back?44:0);
+  let s = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(opt.label||'Diagram')}"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--link)"/></marker></defs>`;
+  const seen = new Set();
+  edges.forEach(e=>{ const a=pos[e.from], b=pos[e.to]; if(!a||!b||e.from===e.to) return; const key=e.from+'>'+e.to; if(seen.has(key)) return; seen.add(key);
+    let x1=a.x+W, y1=a.y+H/2, x2=b.x, y2=b.y+H/2, d;
+    if(x2>x1){ const mx=(x1+x2)/2; d=`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2-2},${y2}`; }
+    else { x1=a.x+W/2; y1=a.y+H; x2=b.x+W/2; y2=b.y+H; const dy=Math.max(y1,y2)+30; d=`M${x1},${y1} C${x1},${dy} ${x2},${dy} ${x2},${y2+2}`; }
+    const lbl = [...new Set(edges.filter(x=>x.from===e.from&&x.to===e.to).map(x=>x.label).filter(Boolean))].join(', ');
+    s += `<path class="edge ${e.cls||''}" d="${d}" marker-end="url(#ah)"><title>${esc(lbl)}</title></path>`; });
+  nodes.forEach(n=>{ const p=pos[n.id];
+    s += `<g class="node ${n.ext?'ext':''} ${n.sel?'sel':''}" tabindex="0" role="button" data-node="${esc(n.id)}" transform="translate(${p.x},${p.y})"><title>${esc(n.tip||n.title)}</title>
+      <rect class="bg" width="${W}" height="${H}" rx="4"/>${n.fill?`<rect width="6" height="${H}" rx="2" style="fill:${n.fill}"/>`:''}
+      <text x="14" y="20" style="font-weight:800;font-size:14px;font-variation-settings:'wdth' 62">${esc(n.head||n.id)}</text>
+      ${wrapText(n.title, W-24, 2).map((t,i)=>`<text x="14" y="${36+i*14}" style="font-size:12.5px">${esc(t)}</text>`).join('')}</g>`; });
+  return s + '</svg>';
+}
+function bindNodes(el, fn){ $$('.node', el).forEach(g=>{ g.addEventListener('click', ()=>fn(g.dataset.node)); g.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(g.dataset.node); } }); }); }
+
+// ================= views: map =================
+function emptyState(){
+  return `<div class="empty"><h2>Belum ada BUC</h2>
+  <p>Mulai dari hasil wawancara: isi BUC satu per satu, atau tempel catatan wawancara dan biarkan AI menyusun drafnya. Setiap BUC cukup menjelaskan dirinya sendiri, yaitu dokumen yang masuk (input) dan yang dihasilkan (output). Sambungan antar-BUC dan peta organisasi terbentuk otomatis.</p>
+  <div class="toolbar"><button class="primary" data-go="#/new">+ BUC baru</button><button class="ghost" data-go="#/interview">Susun dari catatan wawancara</button><button class="ghost" data-go="#/data">Impor paket BUC</button><button class="ghost" data-sample="load">Muat data contoh</button></div></div>`;
+}
+function viewMap(main){
+  const repo = analyze();
+  const c = {domains:repo.domains.length, pas:repo.pas.size, bucs:repo.bucs.length, links:repo.links.length, sys:repo.systems.length};
+  let h = head(S.settings.org ? `Peta BUC ${esc(S.settings.org)}` : 'Peta BUC organisasi', 'Helicopter view. Klik blok process area untuk masuk ke alur dan detail BUC.',
+    `<div class="stats">${[[c.domains,'domain'],[c.pas,'process area'],[c.bucs,'BUC'],[c.links,'sambungan'],[c.sys,'kandidat sistem']].map(([n,l])=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`).join('')}</div>`);
+  if(!S.bucs.size){ main.innerHTML = h + emptyState(); return; }
+  const nS = repo.all.filter(b=>b.sample).length;
+  if(nS) h += `<div class="banner">Peta ini memuat ${nS} BUC contoh. <button class="lnk" data-sample="remove">Hapus data contoh</button> sebelum mulai memakai data nyata.</div>`;
+  h += `<div class="toolbar">${layerSeg()}</div><div class="legend"><span>Kebutuhan SI <span class="grad"></span> tinggi</span>${['Manual','Spreadsheet','Mixed','Application','Unknown'].map(k=>`<span><i style="background:var(${SUP_VAR[k]})"></i>${SUP_LABEL[k]}</span>`).join('')}</div>`;
+  for(const d of repo.domains){
+    const nb = d.pas.reduce((s,p)=>s+p.bucs.length,0);
+    h += `<section class="district"><div class="dname">${esc(d.name)}<small>${d.group?esc(d.group)+', ':''}${d.pas.length} area, ${nb} BUC</small></div><div class="blocks">`;
+    for(const p of d.pas){
+      const drafts = p.bucs.filter(id=>(repo.byId[id].review||'draft')==='draft').length;
+      h += `<button class="block" style="--need:${needColor(p.need)}" data-go="#/area/${encodeURIComponent(p.code)}" aria-label="${esc(p.name)}, kebutuhan ${p.need}">
+        <div class="need">${p.need}<small>/100</small></div><div class="code">${esc(p.code)}</div><div class="nm">${esc(p.name)}</div>
+        <div class="meta"><span>${p.bucs.length} BUC, ${p.pains} masalah</span><span>${p.system}</span></div>${supportBar(p.support)}
+        <div class="tiny">${[...p.layers].map(l=>l==='manual'?'as-is':'to-be').join(' + ')}${p.gaps?`, ${p.gaps} temuan celah`:''}${drafts?`, ${drafts} draf`:''}</div></button>`;
+    }
+    h += `</div></section>`;
+  }
+  main.innerHTML = h;
+}
+// ================= views: flow =================
+function viewFlow(main){
+  const repo = analyze(); const agg = {};
+  for(const l of repo.links){ const a = repo.paOf(l.from).code, b = repo.paOf(l.to).code; if(a===b) continue; const k=a+'>'+b; agg[k] = agg[k] || {from:a, to:b, items:new Set(), weak:true}; agg[k].items.add(l.label); if(l.kind==='matched') agg[k].weak=false; }
+  const byCode = {}; for(const p of repo.pas.values()) byCode[p.code] = p;
+  const nodes = [...repo.pas.values()].map(p=>({id:p.code, title:p.name, fill:needColor(p.need), tip:`${p.name} (${p.domain}), kebutuhan ${p.need}`}));
+  const edges = Object.values(agg).map(e=>({from:e.from, to:e.to, label:[...e.items].join(', '), cls:e.weak?'weak':''}));
+  main.innerHTML = head('Alur antar-area', 'Gabungan sambungan BUC antar process area. Arahkan kursor ke panah untuk melihat dokumen yang mengalir.') +
+    `<div class="toolbar">${layerSeg()}</div>` + (S.bucs.size ? `<div class="graphbox" id="g">${graphSVG(nodes, edges, {w:190, gx:80, label:'Alur antar process area'})}</div>
+    <h2>Serah-terima antar-area</h2><div class="tablebox"><table><thead><tr><th>Dari</th><th>Ke</th><th>Dokumen / data</th><th>Kecocokan</th></tr></thead><tbody>
+    ${Object.values(agg).sort((a,b)=>a.from.localeCompare(b.from)).map(e=>`<tr><td>${esc(e.from)} ${esc(byCode[e.from].name)}</td><td>${esc(e.to)} ${esc(byCode[e.to].name)}</td><td>${[...e.items].map(esc).join(', ')}</td><td>${e.weak?'perlu dicek':'cocok'}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Belum ada sambungan antar-area.</td></tr>'}
+    </tbody></table></div>` : emptyState());
+  const g = $('#g'); if(g) bindNodes(g, code => go('#/area/'+encodeURIComponent(code)));
+}
+// ================= views: area + detail =================
+function viewArea(main, args){
+  const repo = analyze(); const p = [...repo.pas.values()].find(x=>x.code===args[0]);
+  if(!p){ main.innerHTML = head('Area tidak ditemukan', '') + `<p><button class="lnk" data-go="#/">Kembali ke peta</button></p>`; return; }
+  const selId = args[1] && repo.byId[args[1]] ? args[1] : p.bucs[0];
+  const own = new Set(p.bucs), ids = new Set(p.bucs), nodes = [], edges = [];
+  for(const id of p.bucs){ const b = repo.byId[id]; nodes.push({id, head:b.code||'—', title:b.name, fill:`var(${SUP_VAR[b.support]||'--unk'})`, tip:`${b.code} ${b.name}, ${b.actor}`, sel:id===selId}); }
+  for(const l of repo.links){
+    const fi = own.has(l.from), ti = own.has(l.to); if(!fi && !ti) continue;
+    for(const id of [l.from, l.to]) if(!ids.has(id)){ ids.add(id); const b = repo.byId[id]; nodes.push({id, head:b.code||'—', title:`${b.pa}: ${b.name}`, ext:true}); }
+    edges.push({from:l.from, to:l.to, label:l.label, cls:(l.kind!=='matched'?'weak ':'')+(fi&&ti?'':'cross')});
+  }
+  for(const e of repo.externals.filter(e=>own.has(e.buc))){
+    const id = 'ext:'+e.dir+':'+e.party; if(!ids.has(id)){ ids.add(id); nodes.push({id, head:e.dir==='in'?'Dari pihak luar':'Ke pihak luar', title:e.party, ext:true}); }
+    edges.push(e.dir==='in' ? {from:id, to:e.buc, label:e.artifact, cls:'cross'} : {from:e.buc, to:id, label:e.artifact, cls:'cross'});
+  }
+  main.innerHTML = `<div class="toolbar"><button class="lnk" data-go="#/">Peta</button><span class="muted">›</span><span class="muted">${esc(p.domain)}</span><span class="muted">›</span><b>${esc(p.code)} ${esc(p.name)}</b></div>` +
+    head(`${esc(p.code)}, ${esc(p.name)}`, `${esc(p.domain)}, kebutuhan SI ${p.need}/100, kandidat ${p.system}, aktor: ${[...p.actors].map(esc).join(', ')||'—'}`, `<button class="primary" data-new-in="${esc(p.name)}">+ BUC di area ini</button>`) +
+    `<div class="toolbar">${layerSeg()}</div>
+    <div class="legend"><span><svg width="30" height="8" aria-hidden="true"><path d="M0,4 H30" class="edge"/></svg> output cocok dengan input</span><span><svg width="30" height="8" aria-hidden="true"><path d="M0,4 H30" class="edge weak"/></svg> cocok tanpa status, perlu dicek</span><span>Kotak putus-putus: area lain atau pihak luar</span></div>
+    <div class="two"><div class="graphbox" id="g">${graphSVG(nodes, edges, {label:'Alur BUC '+p.name})}</div><aside class="detail" id="d">${detailHTML(selId)}</aside></div>`;
+  bindNodes($('#g'), id => { if(id.startsWith('ext:')) return; const b = repo.byId[id]; go('#/area/'+encodeURIComponent(repo.paOf(id).code)+'/'+id); });
+}
+function ioList(arr, dir){
+  if(!arr.length) return '';
+  return `<ul>${arr.map(x=>`<li>${esc(x.name)}${x.status?` <b>[${esc(x.status)}]</b>`:''}${x.type?` <span class="muted">(${esc(x.type)})</span>`:''}${x.party?` <span class="muted">${dir==='in'?'dari':'ke'} ${esc(x.party)}</span>`:''}${x.filed?' <span class="muted">diarsip</span>':''}</li>`).join('')}</ul>`;
+}
+function detailHTML(id){
+  const repo = analyze(); const b = repo.byId[id]; if(!b) return '<p class="muted">Pilih BUC pada diagram.</p>';
+  const ins = repo.links.filter(l=>l.to===id), outs = repo.links.filter(l=>l.from===id);
+  const lk = (arr, dir) => arr.map(l=>{ const o = dir==='in'?l.from:l.to; return `<li>${bucLink(o)} ${esc(repo.byId[o].name)} <span class="muted">via ${esc(l.label)}${l.kind!=='matched'?', perlu dicek':''}</span></li>`; }).join('');
+  const inc = repo.gaps.incomplete.find(x=>x.buc===id), mis = repo.gaps.status_mismatch.filter(x=>x.buc===id);
+  return `<div class="gid">${esc(b.code||'—')} <span class="badge ${b.review}">${REVIEW[b.review]||'Draf'}</span>${b.sample?' <span class="badge">Contoh</span>':''}</div>
+  <h3>${esc(b.name)}</h3>
+  <div class="muted" style="font-size:13.5px">${esc(b.actor||'—')}, ${b.layer==='manual'?'as-is manual':'to-be aplikasi'}${b.source&&b.source.interviewee?`, narasumber ${esc(b.source.interviewee)}${b.source.role?' ('+esc(b.source.role)+')':''}`:''}</div>
+  <div class="toolbar" style="margin:10px 0 0"><button class="ghost small" data-go="#/edit/${id}">Ubah</button><button class="ghost small" data-dup="${id}">Duplikat</button></div>
+  <h4>Tujuan</h4><div>${esc(b.goal||'—')}</div>
+  <h4>Input</h4>${b.inputs.length?ioList(b.inputs,'in'):`<div class="muted">Tidak ada${b.startEvent?', dimulai oleh '+esc(b.startEvent):''}</div>`}
+  <h4>Output</h4>${ioList(b.outputs,'out')||'<div class="muted">—</div>'}
+  <h4>Alur utama</h4><ol>${b.flow.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+  ${b.rules.length?`<h4>Aturan bisnis</h4><ul>${b.rules.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}
+  <h4>Dukungan saat ini</h4><div>${SUP_LABEL[b.support]||'—'}${b.supportApp?': '+esc(b.supportApp):''}</div>
+  ${b.pains.length?`<h4>Masalah</h4><ul>${b.pains.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}
+  <h4>CRUD</h4><div class="chips">${crudOf(b).map(a=>`<span class="chip">${esc(a.name)}<b>${a.usage}</b></span>`).join('')}</div>
+  <h4>Masuk dari</h4>${ins.length?`<ul>${lk(ins,'in')}</ul>`:'<div class="muted">—</div>'}
+  <h4>Keluar ke</h4>${outs.length?`<ul>${lk(outs,'out')}</ul>`:'<div class="muted">—</div>'}
+  ${mis.length?`<h4>Perlu dicek</h4>${mis.map(m=>`<div class="err">Butuh ${esc(m.artifact)} [${esc(m.needs)}], yang ada: ${m.available.map(v=>esc(v||'tanpa status')).join(', ')}</div>`).join('')}`:''}
+  ${inc?`<h4>Belum lengkap</h4><div class="err">${inc.missing.join(', ')}</div>`:''}
+  <div class="tiny">${b.updatedAt?`Diubah ${new Date(b.updatedAt).toLocaleString('id-ID')}${b.updatedBy?' oleh '+esc(personName(b.updatedBy)):''}`:''}</div>`;
+}
+// ================= views: list =================
+let listFilter = {q:'', review:'', layer:''};
+function viewList(main){
+  const repo = analyze();
+  const rows = repo.all.filter(b=>{
+    if(listFilter.review && (b.review||'draft')!==listFilter.review) return false;
+    if(listFilter.layer && b.layer!==listFilter.layer) return false;
+    if(listFilter.q){ const q = norm(listFilter.q); const hay = norm([b.code,b.name,b.pa,b.domain,b.actor,b.source&&b.source.interviewee, ...b.inputs.map(x=>x.name), ...b.outputs.map(x=>x.name)].join(' ')); if(!hay.includes(q)) return false; }
+    return true;
+  }).sort((a,b)=>String(a.paCode).localeCompare(b.paCode) || seqOf(a.code)-seqOf(b.code));
+  main.innerHTML = head('Daftar BUC', `${S.bucs.size} BUC tersimpan`, `<button class="primary" data-go="#/new">+ BUC baru</button>`) +
+  `<div class="toolbar"><input class="txt" id="lq" type="search" placeholder="Cari kode, nama, aktor, dokumen, narasumber…" style="max-width:340px" value="${esc(listFilter.q)}" aria-label="Cari">
+   <select class="txt" id="lr" style="width:auto" aria-label="Status tinjauan"><option value="">Semua status</option>${Object.entries(REVIEW).map(([k,v])=>`<option value="${k}" ${listFilter.review===k?'selected':''}>${v}</option>`).join('')}</select>
+   <select class="txt" id="ll" style="width:auto" aria-label="Lapisan"><option value="">Semua lapisan</option><option value="manual" ${listFilter.layer==='manual'?'selected':''}>As-is (manual)</option><option value="computerized" ${listFilter.layer==='computerized'?'selected':''}>To-be (aplikasi)</option></select></div>` +
+  (S.bucs.size ? `<div class="tablebox"><table><thead><tr><th>Kode</th><th>Nama</th><th>Area</th><th>Aktor</th><th>Input → Output</th><th>Dukungan</th><th>Status</th><th>Narasumber</th></tr></thead><tbody>
+  ${rows.map(b=>`<tr class="click" data-open="${b.id}" tabindex="0"><td><b>${esc(b.code||'—')}</b></td><td>${esc(b.name)}</td><td>${esc(b.pa)}</td><td>${esc(b.actor)}</td><td class="muted">${b.inputs.length} → ${b.outputs.length}</td><td>${SUP_LABEL[b.support]||''}</td><td><span class="badge ${b.review}">${REVIEW[b.review]||'Draf'}</span>${b.sample?' <span class="badge">Contoh</span>':''}</td><td class="muted">${esc(b.source&&b.source.interviewee||'')}</td></tr>`).join('') || '<tr><td colspan="8" class="muted">Tidak ada yang cocok dengan filter.</td></tr>'}
+  </tbody></table></div>` : emptyState());
+  const lq = $('#lq'); if(lq){ lq.addEventListener('input', e=>{ listFilter.q = e.target.value; clearTimeout(lq._t); lq._t = setTimeout(()=>{ const pos = e.target.selectionStart; viewList(main); const n=$('#lq'); n.focus(); n.setSelectionRange(pos,pos); }, 180); });
+    $('#lr').onchange = e=>{ listFilter.review = e.target.value; viewList(main); }; $('#ll').onchange = e=>{ listFilter.layer = e.target.value; viewList(main); }; }
+}
+
+// ================= dialogs (no native modals: they are blocked inside sandboxed frames) =================
+function ask({title, body='', input=null, okLabel='OK', cancelLabel='Batal', danger=false, text=null}){
+  return new Promise(resolve=>{
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px';
+    wrap.innerHTML = `<div role="dialog" aria-modal="true" aria-label="${esc(title)}" style="background:var(--panel);color:var(--ink);border-radius:8px;max-width:640px;width:100%;padding:18px 20px;box-shadow:0 10px 40px rgba(0,0,0,.3);max-height:90vh;overflow:auto">
+      <h2 style="margin:0 0 8px">${esc(title)}</h2>${body?`<div class="note" style="margin-bottom:10px">${body}</div>`:''}
+      ${input!==null?`<input class="txt" id="dlgIn" value="${esc(input)}">`:''}
+      ${text!==null?`<textarea class="txt" id="dlgTx" style="min-height:260px;font-size:12.5px" readonly>${esc(text)}</textarea>`:''}
+      <div class="toolbar" style="margin:14px 0 0;justify-content:flex-end">${cancelLabel?`<button class="ghost" id="dlgNo">${esc(cancelLabel)}</button>`:''}<button class="${danger?'danger':'primary'}" id="dlgOk">${esc(okLabel)}</button></div></div>`;
+    document.body.appendChild(wrap);
+    const done = v => { wrap.remove(); resolve(v); };
+    const inp = $('#dlgIn', wrap), tx = $('#dlgTx', wrap);
+    $('#dlgOk', wrap).onclick = () => done(input!==null ? inp.value : true);
+    const no = $('#dlgNo', wrap); if(no) no.onclick = () => done(input!==null ? null : false);
+    wrap.addEventListener('keydown', e=>{ if(e.key==='Escape') done(input!==null?null:false); if(e.key==='Enter' && inp && document.activeElement===inp) done(inp.value); });
+    (inp || tx || $('#dlgOk', wrap)).focus(); if(tx) tx.select();
+  });
+}
+async function offerText(title, textValue, filename){
+  let copied = false;
+  try{ await navigator.clipboard.writeText(textValue); copied = true; }catch(e){}
+  const dl = filename ? await canDownload() : false;
+  const r = await ask({title, body: copied ? 'Sudah disalin ke clipboard. Isinya juga ditampilkan di bawah.' : 'Pilih semua teks di bawah lalu salin (Ctrl+C / Cmd+C).', text:textValue, okLabel: dl ? 'Simpan sebagai file' : 'Tutup', cancelLabel: dl ? 'Tutup' : ''});
+  if(r && dl) saveFile(filename, textValue);
+}
+async function canDownload(){ return !!S.caps.downloads || S.mode==='local'; }
+async function saveFile(filename, data){
+  if(S.caps.downloads){ try{ await S.caps.downloads.save({filename, data}); toast('File disimpan.'); }catch(e){ if(e.code!=='declined') toast('File tidak bisa disimpan di sini ('+(e.code||'galat')+').'); } return; }
+  try{ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type:'application/json'})); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500); }catch(e){ toast('File tidak bisa disimpan di perangkat ini.'); }
+}
+
+// ================= editor =================
+let ED = null; // {id, b, dirty, autoCode}
+function viewEditor(main, args, name){
+  if(!ED || ED.route !== location.hash){
+    if(name==='edit'){
+      const src = S.bucs.get(args[0]); if(!src){ main.innerHTML = head('BUC tidak ditemukan','') + `<button class="lnk" data-go="#/bucs">Kembali ke daftar</button>`; return; }
+      ED = {id:args[0], b:normalizeBuc(clone(src)), dirty:false, autoCode:false};
+    } else {
+      const preset = S.editing; S.editing = null;
+      const b = preset ? normalizeBuc(preset.buc) : blankBuc(S.lastLayer || 'manual');
+      if(!preset && S.newInPa){ b.pa = S.newInPa; S.newInPa = null; const k = paCodeMap()[norm(b.pa)]; if(k){ b.paCode = k; } const d = [...S.bucs.values()].find(x=>norm(x.pa)===norm(b.pa)); if(d) b.domain = d.domain; }
+      if(!preset && S.lastSource){ b.source = Object.assign({}, S.lastSource); }
+      if(b.flow.length===0) b.flow=[''];
+      if(b.paCode && !b.code) b.code = nextCode(b.paCode);
+      ED = {id:null, b, dirty:!!preset, autoCode:true, draftKey: preset && preset.key};
+    }
+    ED.route = location.hash;
+  }
+  renderEditor(main);
+}
+function ioRow(kind, r, i, comp){
+  const stList = 'dl-st-'+kind+i;
+  const st = (S.vocab.arts[norm(r.name)] && [...S.vocab.arts[norm(r.name)].statuses]) || [];
+  const partyMode = r.filed ? 'filed' : (r.party ? 'ext' : 'int');
+  return `<div class="io ${comp?'withtype':''}" data-io="${kind}" data-i="${i}">
+    <div class="nm"><input class="txt" data-io-f="name" value="${esc(r.name)}" list="dl-arts" placeholder="${kind==='inputs'?'Dokumen/data yang diterima':'Dokumen/data yang dihasilkan'}" aria-label="Nama ${kind==='inputs'?'input':'output'} ${i+1}"></div>
+    ${comp?`<select class="txt" data-io-f="type" aria-label="Tipe entity"><option value="">Tipe…</option>${ENTITY_TYPES.map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}</select>`:''}
+    <div><input class="txt" data-io-f="status" value="${esc(r.status)}" list="${stList}" placeholder="Status (opsional)" aria-label="Status"><datalist id="${stList}">${st.map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
+    <div class="party"><select class="txt" data-io-f="mode" aria-label="Asal atau tujuan">
+      <option value="int" ${partyMode==='int'?'selected':''}>Internal</option>
+      <option value="ext" ${partyMode==='ext'?'selected':''}>${kind==='inputs'?'Dari luar':'Ke luar'}</option>
+      ${kind==='outputs'?`<option value="filed" ${partyMode==='filed'?'selected':''}>Diarsip</option>`:''}</select>
+      ${partyMode==='ext'?`<input class="txt" data-io-f="party" value="${esc(r.party)}" list="dl-parties" placeholder="Supplier, Customer…" aria-label="Pihak luar">`:''}</div>
+    <div class="acts"><button class="icon" data-ed="io-del" title="Hapus baris" aria-label="Hapus baris">✕</button></div></div>`;
+}
+function listBlock(key, label, placeholder){
+  const arr = ED.b[key];
+  return `<div class="listed">${arr.map((v,i)=>`<div class="li" data-list="${key}" data-i="${i}"><span class="num">${key==='flow'?i+1+'.':'•'}</span>
+    <textarea class="txt" rows="1" style="min-height:38px" data-list-f placeholder="${esc(placeholder)}" aria-label="${esc(label)} ${i+1}">${esc(v)}</textarea>
+    <span class="acts">${key==='flow'?`<button class="icon" data-ed="up" title="Naikkan" aria-label="Naikkan">↑</button><button class="icon" data-ed="down" title="Turunkan" aria-label="Turunkan">↓</button>`:''}<button class="icon" data-ed="del" title="Hapus" aria-label="Hapus">✕</button></span></div>`).join('')}</div>
+    <button class="ghost small" data-ed="add" data-key="${key}" style="margin-top:6px">+ Tambah</button>`;
+}
+function renderEditor(main){
+  const b = ED.b, comp = b.layer==='computerized';
+  const sy = window.scrollY;
+  main.innerHTML = head(ED.id ? `Ubah ${esc(b.code||'BUC')}` : 'BUC baru', ED.id ? esc(b.name) : 'Isi berdasarkan wawancara. Cukup jelaskan BUC ini sendiri; sambungan ke BUC lain dicari otomatis.') +
+  `<div class="editor"><div class="form" id="form">
+  <section><h2>Konteks wawancara</h2>
+    <div class="grid3"><div class="row"><label class="f" for="f-int">Narasumber</label><input class="txt" id="f-int" data-f="source.interviewee" value="${esc(b.source.interviewee)}" placeholder="Nama narasumber"></div>
+    <div class="row"><label class="f" for="f-role">Jabatan</label><input class="txt" id="f-role" data-f="source.role" value="${esc(b.source.role)}"></div>
+    <div class="row"><label class="f" for="f-date">Tanggal</label><input class="txt" type="date" id="f-date" data-f="source.date" value="${esc(b.source.date)}"></div></div>
+    <div class="row"><span class="f" style="display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:4px">Lapisan</span>
+      <div class="seg" role="group" aria-label="Lapisan"><button data-ed="layer" data-v="manual" aria-pressed="${!comp}">As-is (manual, dokumen kertas)</button><button data-ed="layer" data-v="computerized" aria-pressed="${comp}">To-be (aplikasi, data entity)</button></div></div>
+  </section>
+  <section><h2>Identitas BUC</h2>
+    <div class="grid2"><div class="row"><label class="f" for="f-dom">Business domain</label><input class="txt" id="f-dom" data-f="domain" list="dl-domains" value="${esc(b.domain)}" placeholder="Supply Chain, Finance…"></div>
+    <div class="row"><label class="f" for="f-pa">Process area</label><input class="txt" id="f-pa" data-f="pa" list="dl-pas" value="${esc(b.pa)}" placeholder="Procurement, Goods Receiving…"></div></div>
+    <div class="grid3"><div class="row"><label class="f" for="f-name">Nama BUC</label><input class="txt" id="f-name" data-f="name" value="${esc(b.name)}" placeholder="Kata kerja + objek, mis. Approve Purchase Request"></div>
+    <div class="row"><label class="f" for="f-pac">Kode area</label><input class="txt" id="f-pac" data-f="paCode" value="${esc(b.paCode)}" maxlength="5" placeholder="PUR"></div>
+    <div class="row"><label class="f" for="f-code">Kode BUC</label><input class="txt" id="f-code" data-f="code" value="${esc(b.code)}" placeholder="PUR-01"></div></div>
+    <div class="grid2"><div class="row"><label class="f" for="f-act">Aktor utama (peran)</label><input class="txt" id="f-act" data-f="actor" list="dl-actors" value="${esc(b.actor)}" placeholder="Purchasing Officer"></div>
+    <div class="row"><label class="f" for="f-rev">Status tinjauan</label><select class="txt" id="f-rev" data-f="review">${Object.entries(REVIEW).map(([k,v])=>`<option value="${k}" ${b.review===k?'selected':''}>${v}</option>`).join('')}</select></div></div>
+    <div class="row"><label class="f" for="f-goal">Tujuan (satu kalimat)</label><input class="txt" id="f-goal" data-f="goal" value="${esc(b.goal)}" placeholder="To … so that …"></div>
+    <div id="codeWarn"></div>
+  </section>
+  <section><h2>Input ${comp?'data':'dokumen'}</h2><p class="note" style="margin:-4px 0 8px">Yang diterima, diperiksa, atau dirujuk. Kalau dokumen ditandatangani atau diubah di BUC ini, masukkan juga ke Output dengan status barunya.</p>
+    <div class="listed">${b.inputs.map((r,i)=>ioRow('inputs', r, i, comp)).join('')}</div>
+    <button class="ghost small" data-ed="io-add" data-key="inputs" style="margin-top:6px">+ Tambah input</button>
+    ${b.inputs.length?'':`<div class="row" style="margin-top:10px"><label class="f" for="f-start">Tanpa input, dimulai oleh</label><input class="txt" id="f-start" data-f="startEvent" value="${esc(b.startEvent)}" placeholder="Jadwal mingguan, stok di bawah minimum…"></div>`}
+  </section>
+  <section><h2>Output ${comp?'data':'dokumen'}</h2><p class="note" style="margin:-4px 0 8px">Yang dibuat, diisi, ditandatangani, atau disetujui di BUC ini.</p>
+    <div class="listed">${b.outputs.map((r,i)=>ioRow('outputs', r, i, comp)).join('')}</div>
+    <button class="ghost small" data-ed="io-add" data-key="outputs" style="margin-top:6px">+ Tambah output</button>
+  </section>
+  <section><h2>Alur utama</h2>${listBlock('flow','Langkah','[Aktor] melakukan …')}</section>
+  <section><h2>Aturan bisnis</h2>${listBlock('rules','Aturan','Kebijakan, batas persetujuan, tenggat…')}</section>
+  <section><h2>Kondisi saat ini</h2>
+    <div class="grid2"><div class="row"><label class="f" for="f-sup">Dukungan saat ini</label><select class="txt" id="f-sup" data-f="support">${SUPPORT.map(k=>`<option value="${k}" ${b.support===k?'selected':''}>${SUP_LABEL[k]}</option>`).join('')}</select></div>
+    ${b.support==='Application'||b.support==='Mixed'?`<div class="row"><label class="f" for="f-app">Nama aplikasi / keterangan</label><input class="txt" id="f-app" data-f="supportApp" list="dl-apps" value="${esc(b.supportApp)}"></div>`:'<div></div>'}</div>
+    <label class="f">Masalah yang disampaikan narasumber</label>${listBlock('pains','Masalah','Keterlambatan, dokumen hilang, input ganda…')}
+  </section>
+  ${comp?`<section><h2>Menggantikan dokumen kertas</h2><p class="note" style="margin:-4px 0 8px">Opsional. Jembatan dari as-is ke to-be, mis. Purchase Order Form ⇒ Purchase Order.</p>
+    <div class="listed">${b.replaces.map((r,i)=>`<div class="io" style="grid-template-columns:1fr 1fr auto" data-rep="${i}"><input class="txt" data-rep-f="document" value="${esc(r.document)}" list="dl-arts" placeholder="Dokumen kertas" aria-label="Dokumen kertas"><input class="txt" data-rep-f="entity" value="${esc(r.entity)}" list="dl-arts" placeholder="Data entity" aria-label="Data entity"><button class="icon" data-ed="rep-del" aria-label="Hapus">✕</button></div>`).join('')}</div>
+    <button class="ghost small" data-ed="rep-add" style="margin-top:6px">+ Tambah padanan</button></section>`:''}
+  <div class="savebar"><button class="primary" data-ed="save" ${S.canWrite?'':'disabled'}>Simpan</button><button class="ghost" data-ed="save-new" ${S.canWrite?'':'disabled'}>Simpan & buat berikutnya</button><button class="ghost" data-ed="cancel">Batal</button>${ED.id?`<button class="danger" data-ed="delete" style="margin-left:auto" ${S.canWrite?'':'disabled'}>Hapus</button>`:''}<span class="err" id="edErr"></span></div>
+  </div><aside class="conn" id="conn" aria-live="polite"></aside></div>`;
+  renderConn(); window.scrollTo(0, sy);
+  const form = $('#form');
+  form.addEventListener('input', onEdInput); form.addEventListener('change', onEdChange);
+  $$('textarea[data-list-f]', form).forEach(autoGrow);
+}
+function autoGrow(t){ t.style.height='auto'; t.style.height = Math.max(38, t.scrollHeight+2)+'px'; }
+function setPath(o, path, v){ const ks = path.split('.'); let x = o; for(let i=0;i<ks.length-1;i++) x = x[ks[i]] = x[ks[i]] || {}; x[ks[ks.length-1]] = v; }
+function onEdInput(e){
+  const t = e.target; ED.dirty = true; const b = ED.b;
+  if(t.dataset.f){
+    setPath(b, t.dataset.f, t.value);
+    if(t.dataset.f==='pa'){ const k = paCodeMap()[norm(t.value)]; if(k){ b.paCode = k; $('#f-pac').value = k; } else if(!ED.id){ const used = new Set(Object.values(paCodeMap())); b.paCode = t.value ? deriveCode(t.value, used) : ''; $('#f-pac').value = b.paCode; }
+      const d = [...S.bucs.values()].find(x=>norm(x.pa)===norm(t.value)); if(d && !b.domain){ b.domain = d.domain; $('#f-dom').value = d.domain; }
+      if(ED.autoCode && b.paCode){ b.code = nextCode(b.paCode, ED.id); $('#f-code').value = b.code; } }
+    if(t.dataset.f==='paCode'){ b.paCode = t.value.toUpperCase(); if(ED.autoCode && b.paCode){ b.code = nextCode(b.paCode, ED.id); $('#f-code').value = b.code; } }
+    if(t.dataset.f==='code'){ ED.autoCode = false; b.code = t.value.toUpperCase(); }
+  } else if(t.dataset.ioF){
+    const row = t.closest('[data-io]'); const r = b[row.dataset.io][+row.dataset.i]; const f = t.dataset.ioF;
+    if(f==='name'||f==='status'||f==='party') r[f] = t.value;
+    if(f==='name'){ const a = S.vocab.arts[norm(t.value)]; const dl = $('#dl-st-'+row.dataset.io+row.dataset.i); if(dl) dl.innerHTML = (a?[...a.statuses]:[]).map(s=>`<option value="${esc(s)}">`).join('');
+      if(a && b.layer==='computerized' && !r.type && a.types.size){ r.type = [...a.types][0]; const sel = $('[data-io-f=type]', row); if(sel) sel.value = r.type; } }
+  } else if(t.dataset.listF!==undefined){
+    const li = t.closest('[data-list]'); b[li.dataset.list][+li.dataset.i] = t.value; autoGrow(t);
+  } else if(t.dataset.repF){ const i = +t.closest('[data-rep]').dataset.rep; b.replaces[i][t.dataset.repF] = t.value; }
+  clearTimeout(ED._t); ED._t = setTimeout(renderConn, 250);
+}
+function onEdChange(e){
+  const t = e.target, b = ED.b;
+  if(t.dataset.ioF==='type'){ const row=t.closest('[data-io]'); b[row.dataset.io][+row.dataset.i].type = t.value; ED.dirty=true; renderConn(); }
+  if(t.dataset.ioF==='mode'){ const row=t.closest('[data-io]'); const r=b[row.dataset.io][+row.dataset.i]; r.filed = t.value==='filed'; if(t.value!=='ext') r.party=''; else if(!r.party) r.party=' '; ED.dirty=true; renderEditor($('#main')); const p = $(`[data-io="${row.dataset.io}"][data-i="${row.dataset.i}"] [data-io-f=party]`); if(p){ p.value=''; r.party=''; p.focus(); } }
+  if(t.dataset.f==='support' || t.dataset.f==='review'){ b[t.dataset.f] = t.value; ED.dirty=true; if(t.dataset.f==='support') renderEditor($('#main')); }
+}
+function statusOk(a, b){ return !norm(a) || !norm(b) || norm(a)===norm(b); }
+function renderConn(){
+  const el = $('#conn'); if(!el || !ED) return;
+  const b = normalizeBuc(clone(ED.b)); const others = [...S.bucs.entries()].filter(([id])=>id!==ED.id).map(([id,x])=>({id, ...normalizeBuc(x)})).filter(x=>x.layer===b.layer);
+  const names = Object.values(S.vocab.arts).map(a=>a.name);
+  const sugg = (n) => names.filter(x=>norm(x)!==norm(n)).map(x=>[x, ratio(x,n)]).filter(x=>x[1]>=0.55).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const lines = [];
+  b.inputs.forEach((i, idx)=>{
+    let h = `<b>${esc(i.name)}</b>${i.status?` [${esc(i.status)}]`:''}<br>`;
+    if(i.party) h = `<span class="st ext">↘</span>` + h + `<span class="muted">Dari pihak luar: ${esc(i.party)}</span>`;
+    else {
+      const prods = others.filter(x=>x.outputs.some(o=>norm(o.name)===norm(i.name) && !o.party && !o.filed));
+      const ok = prods.filter(x=>x.outputs.some(o=>norm(o.name)===norm(i.name) && statusOk(o.status,i.status)));
+      if(ok.length) h = `<span class="st ok">✓</span>` + h + `Dihasilkan oleh ${ok.map(x=>`<b>${esc(x.code)}</b> ${esc(x.name)}`).join('; ')}`;
+      else if(prods.length){ const av = [...new Set(prods.flatMap(x=>x.outputs.filter(o=>norm(o.name)===norm(i.name)).map(o=>o.status||'')))];
+        h = `<span class="st warn">!</span>` + h + `Ada, tapi tidak dengan status ini. Tersedia: ${av.map(s=>s?`<button class="lnk" data-fix="inputs:${idx}:status:${esc(s)}">${esc(s)}</button>`:'tanpa status').join(', ')}`; }
+      else if(SHARED_TYPES.has(norm(i.type))) h = `<span class="st warn">!</span>` + h + `Master data; belum ada BUC yang mengelolanya.`;
+      else if(others.some(x=>x.outputs.some(o=>norm(o.name)===norm(i.name)))){ const w = others.filter(x=>x.outputs.some(o=>norm(o.name)===norm(i.name)));
+        h = `<span class="st warn">!</span>` + h + `Dihasilkan oleh ${w.map(x=>`<b>${esc(x.code)}</b>`).join(', ')}, tetapi di sana ditandai dikirim ke pihak luar atau diarsip. Pastikan alurnya memang kembali ke internal.`; }
+      else { const sg = sugg(i.name); h = `<span class="st bad">?</span>` + h + `Belum ada BUC yang menghasilkannya. Tanyakan ke narasumber dari mana dokumen ini datang.${sg.length?`<br>Mungkin maksudnya: ${sg.map(([n])=>`<button class="lnk" data-fix="inputs:${idx}:name:${esc(n)}">${esc(n)}</button>`).join(', ')}`:''}`; }
+    }
+    lines.push(`<li>${h}</li>`);
+  });
+  const outs = [];
+  b.outputs.forEach((o, idx)=>{
+    let h = `<b>${esc(o.name)}</b>${o.status?` [${esc(o.status)}]`:''}<br>`;
+    if(o.party) h = `<span class="st ext">↗</span>` + h + `<span class="muted">Ke pihak luar: ${esc(o.party)}</span>`;
+    else if(o.filed) h = `<span class="st ext">▣</span>` + h + `<span class="muted">Diarsip</span>`;
+    else { const cons = others.filter(x=>x.inputs.some(i=>norm(i.name)===norm(o.name) && statusOk(i.status,o.status)));
+      if(cons.length) h = `<span class="st ok">✓</span>` + h + `Dipakai oleh ${cons.map(x=>`<b>${esc(x.code)}</b> ${esc(x.name)}`).join('; ')}`;
+      else { const sg = sugg(o.name); h = `<span class="st warn">…</span>` + h + `Belum dipakai BUC lain. Tanyakan: setelah ini dokumen dibawa ke siapa?${sg.length?`<br>Nama serupa: ${sg.map(([n])=>`<button class="lnk" data-fix="outputs:${idx}:name:${esc(n)}">${esc(n)}</button>`).join(', ')}`:''}`; } }
+    outs.push(`<li>${h}</li>`);
+  });
+  const dup = b.code && others.concat([...S.bucs.entries()].filter(([id])=>id!==ED.id).map(([id,x])=>({id,...x}))).find(x=>x.code===b.code);
+  const cw = $('#codeWarn'); if(cw) cw.innerHTML = dup ? `<div class="err">Kode ${esc(b.code)} sudah dipakai oleh ${esc(dup.name)}. <button class="lnk" data-ed="fixcode">Pakai ${esc(nextCode(b.paCode||b.code.split('-')[0], ED.id))}</button></div>` : '';
+  el.innerHTML = `<h2>Sambungan</h2><p class="note" style="margin:0 0 8px">Dicek langsung terhadap ${others.length} BUC ${b.layer==='manual'?'as-is':'to-be'} lain. Pakai ini sebagai bahan pertanyaan lanjutan saat wawancara.</p>
+    <h4 style="margin:10px 0 2px;font-size:13px;color:var(--ink2)">Input</h4><ul>${lines.join('') || '<li class="muted">Belum ada input.</li>'}</ul>
+    <h4 style="margin:10px 0 2px;font-size:13px;color:var(--ink2)">Output</h4><ul>${outs.join('') || '<li class="muted">Belum ada output. Setiap BUC sebaiknya menghasilkan sesuatu.</li>'}</ul>`;
+}
+async function edAction(btn){
+  const a = btn.dataset.ed, b = ED.b;
+  if(a==='layer'){ b.layer = btn.dataset.v; S.lastLayer = b.layer; ED.dirty = true; renderEditor($('#main')); return; }
+  if(a==='add'){ b[btn.dataset.key].push(''); renderEditor($('#main')); const l = $$(`[data-list="${btn.dataset.key}"] textarea`); l[l.length-1].focus(); return; }
+  if(a==='del'||a==='up'||a==='down'){ const li = btn.closest('[data-list]'); const arr = b[li.dataset.list], i = +li.dataset.i;
+    if(a==='del') arr.splice(i,1); else { const j = a==='up'?i-1:i+1; if(j<0||j>=arr.length) return; [arr[i],arr[j]] = [arr[j],arr[i]]; }
+    if(li.dataset.list==='flow' && !arr.length) arr.push(''); ED.dirty = true; renderEditor($('#main')); return; }
+  if(a==='io-add'){ b[btn.dataset.key].push({name:'', type:'', status:'', party:'', filed:false}); renderEditor($('#main')); const l = $$(`[data-io="${btn.dataset.key}"] [data-io-f=name]`); l[l.length-1].focus(); return; }
+  if(a==='io-del'){ const row = btn.closest('[data-io]'); b[row.dataset.io].splice(+row.dataset.i,1); ED.dirty = true; renderEditor($('#main')); return; }
+  if(a==='rep-add'){ b.replaces.push({document:'', entity:''}); renderEditor($('#main')); return; }
+  if(a==='rep-del'){ b.replaces.splice(+btn.closest('[data-rep]').dataset.rep,1); renderEditor($('#main')); return; }
+  if(a==='fixcode'){ b.code = nextCode(b.paCode || b.code.split('-')[0], ED.id); ED.autoCode = true; renderEditor($('#main')); return; }
+  if(a==='cancel'){ if(ED.dirty && !(await ask({title:'Buang perubahan?', body:'Perubahan yang belum disimpan akan hilang.', okLabel:'Buang', danger:true}))) return; const back = ED.id ? '#/area/'+encodeURIComponent(analyze().paOf(ED.id)?.code||'')+'/'+ED.id : '#/bucs'; ED = null; go(ED===null && back.includes('/area//') ? '#/bucs' : back); return; }
+  if(a==='delete'){ if(!(await ask({title:`Hapus ${b.code||'BUC'}?`, body:'BUC ini akan dihapus untuk semua pengguna. Tindakan ini tidak bisa dibatalkan.', okLabel:'Hapus', danger:true}))) return;
+    if(await Store.deleteBuc(ED.id)){ toast('BUC dihapus.'); ED = null; go('#/bucs'); } return; }
+  if(a==='save' || a==='save-new'){
+    const x = normalizeBuc(clone(b)); const err = [];
+    if(!x.name) err.push('nama BUC'); if(!x.pa) err.push('process area'); if(!x.actor) err.push('aktor');
+    if(err.length){ $('#edErr').textContent = 'Lengkapi dulu: ' + err.join(', ') + '.'; return; }
+    if(!x.paCode){ x.paCode = deriveCode(x.pa, new Set(Object.values(paCodeMap()))); }
+    if(!x.code || [...S.bucs.entries()].some(([id,o])=>id!==ED.id && o.code===x.code)) x.code = nextCode(x.paCode, ED.id);
+    const prev = ED.id ? S.bucs.get(ED.id) : null; if(prev){ x.createdAt = prev.createdAt; x.createdBy = prev.createdBy; }
+    const id = ED.id || uid(); btn.disabled = true;
+    const ok = await Store.saveBuc(id, x); btn.disabled = false; if(!ok) return;
+    if(ED.draftKey) S.aiDrafts = S.aiDrafts.filter(d=>d.key!==ED.draftKey);
+    S.lastSource = Object.assign({}, x.source); S.lastLayer = x.layer;
+    toast(`${x.code} tersimpan.`);
+    if(a==='save-new'){ S.newInPa = x.pa; ED = null; if(location.hash==='#/new') render(); else go('#/new'); }
+    else { if(S.layer!=='all' && x.layer!==S.layer){ S.layer='all'; S.repo=null; } ED = null; go('#/area/'+encodeURIComponent(analyze().paOf(id).code)+'/'+id); }
+  }
+}
+function applyFix(spec){ const [kind, idx, field, ...rest] = spec.split(':'); ED.b[kind][+idx][field] = rest.join(':'); ED.dirty = true; renderEditor($('#main')); }
+
+// ================= AI provider (Claude inside claude.ai; own server or Ollama in the PWA) =================
+const AI_KEY = 'atlas-ai';
+function aiConfig(){ try{ return Object.assign({mode:'off', url:'', model:'qwen3:14b'}, JSON.parse(localStorage.getItem(AI_KEY)||'{}')); }catch(e){ return {mode:'off', url:'', model:'qwen3:14b'}; } }
+function saveAiConfig(c){ try{ localStorage.setItem(AI_KEY, JSON.stringify(c)); }catch(e){} }
+function aiAvailable(){ if(S.caps.sample) return 'claude'; const c = aiConfig(); return (c.mode==='proxy' || c.mode==='ollama') ? c.mode : null; }
+function aiLabel(){ const a = aiAvailable(); const c = aiConfig(); return a==='claude' ? 'Claude' : a==='proxy' ? 'server AI organisasi' : a==='ollama' ? `Ollama (${c.model})` : ''; }
+function parseLoose(text){
+  let t = String(text||'').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+  const fence = /```(?:json)?\s*([\s\S]*?)```/.exec(t); if(fence) t = fence[1].trim();
+  try{ return JSON.parse(t); }catch(e){}
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if(a>=0 && b>a){ try{ return JSON.parse(t.slice(a, b+1)); }catch(e){} }
+  const err = new Error('invalid_json'); err.code = 'invalid_json'; err.text = text; throw err;
+}
+function aiErr(code, message){ const e = new Error(message||code); e.code = code; return e; }
+async function aiJson(prompt, {signal, onText} = {}){
+  const mode = aiAvailable();
+  if(mode==='claude') return S.caps.sample.json(prompt, {signal, modelTier:'default', onText});
+  const c = aiConfig(); let res;
+  try{
+    if(mode==='proxy'){
+      res = await fetch(c.url || 'api/ai/draft', {method:'POST', headers:{'content-type':'application/json'}, credentials:'include', body:JSON.stringify({prompt}), signal});
+    } else if(mode==='ollama'){
+      res = await fetch((c.url || 'http://localhost:11434').replace(/\/+$/,'') + '/api/chat', {method:'POST', headers:{'content-type':'application/json'}, signal,
+        body:JSON.stringify({model:c.model || 'qwen3:14b', stream:false, format:'json', messages:[{role:'user', content:prompt}], options:{temperature:0.2, num_ctx:16384}})});
+    } else throw aiErr('not_configured');
+  }catch(e){ if(e.name==='AbortError') throw aiErr('cancelled'); if(e.code) throw e; throw aiErr('network', e.message); }
+  if(res.status===429) throw aiErr('rate_limited');
+  if(res.status===401 || res.status===403) throw aiErr('unauthorized');
+  let body; try{ body = await res.json(); }catch(e){ throw aiErr('bad_response', 'HTTP '+res.status); }
+  if(!res.ok) throw aiErr(body && body.error || ('http_'+res.status), body && body.message);
+  const text = mode==='ollama' ? (body.message && body.message.content) : body.text;
+  if(onText) onText({text:String(text||''), delta:''});
+  return parseLoose(text);
+}
+async function testAi(c){
+  try{
+    if(c.mode==='proxy'){ const u = (c.url || 'api/ai/draft').replace(/\/draft\/?$/, '/health'); const r = await fetch(u, {credentials:'include'}); const j = await r.json(); return r.ok ? `Terhubung: ${j.provider || 'server'}${j.model?' / '+j.model:''}` : `Gagal (HTTP ${r.status})`; }
+    if(c.mode==='ollama'){ const r = await fetch((c.url||'http://localhost:11434').replace(/\/+$/,'') + '/api/tags'); const j = await r.json(); const names = (j.models||[]).map(m=>m.name); return names.includes(c.model) ? `Terhubung. Model ${c.model} tersedia.` : `Terhubung, tetapi model ${c.model} belum ada. Tersedia: ${names.join(', ') || '—'}`; }
+    return 'Asisten AI dinonaktifkan.';
+  }catch(e){ return c.mode==='ollama' ? 'Tidak bisa menghubungi Ollama. Periksa alamat, dan pastikan OLLAMA_ORIGINS mengizinkan alamat aplikasi ini.' : 'Tidak bisa menghubungi server AI. Periksa alamat endpoint.'; }
+}
+
+// ================= interview + AI =================
+let AI = {notes:'', interviewee:'', role:'', date:new Date().toISOString().slice(0,10), layer:'manual', lang:'English', busy:false, ctl:null, msg:''};
+function glossaryForPrompt(){
+  const v = vocab(); const lim = (arr, n) => arr.sort((a,b)=>b.count-a.count).slice(0,n);
+  return [
+    'Business Domains: ' + (lim(Object.values(v.domains),30).map(x=>x.name).join('; ') || '(none yet)'),
+    'Process Areas (code): ' + (lim(Object.values(v.pas),60).map(x=>`${x.name} (${x.code||'?'})`).join('; ') || '(none yet)'),
+    'Actor roles: ' + (lim(Object.values(v.actors),60).map(x=>x.name).join('; ') || '(none yet)'),
+    'Documents / data entities with statuses in use: ' + (lim(Object.values(v.arts),150).map(x=>x.name + (x.statuses.size?` [${[...x.statuses].join('|')}]`:'') + (x.types.size?` (${[...x.types][0]})`:'')).join('; ') || '(none yet)'),
+  ].join('\n');
+}
+function buildPrompt(){
+  const comp = AI.layer==='computerized';
+  return `You are a senior business analyst. Convert the interview notes below into Business Use Cases (BUC).
+
+Context: ${comp ? 'the target is a database-supported business application; inputs and outputs are persistent data entities (records), each with an entity type from: ' + ENTITY_TYPES.join(', ') + '.' : 'the process is manual and paper-based; inputs and outputs are paper business documents (forms, sheets, checklists, slips, registers, records, certificates, notes/letters). Do not describe system actions.'}
+
+Rules:
+- Split the process into several simple sequential BUCs when needed. Each BUC has exactly one main actor (a role, never a person's name), one Process Area and one Business Domain.
+- Main Flow contains only the normal standard flow, 3-7 steps, each an action by the actor.
+- Never refer to another BUC by name or number. Each BUC only lists its own inputs and outputs.
+- Inputs = documents/records received, reviewed or referred to. Outputs = documents/records prepared, issued, completed, signed, approved or updated. A document that is received and then signed/approved/updated appears in both lists, with its incoming status on the input and its new status on the output.
+- Status is optional; use short past-participle words (Submitted, Approved, Signed, Released, Received, Completed) when a document passes through several states, and keep status words consistent.
+- "external" = party outside the organization (Supplier, Customer, Bank, Government Agency…), empty otherwise. "filed": true for an output that is only kept on file.
+- Reuse the existing names below exactly whenever they fit; only invent new names when nothing fits.
+- current_support: how it is done today per the notes: "Manual", "Spreadsheet", "Application: <name>", "Mixed: <text>" or "Unknown".
+- pain_points: only problems actually mentioned in the notes (max 3 per BUC).
+- Write all BUC text in ${AI.lang}.
+
+Existing vocabulary:
+${glossaryForPrompt()}
+
+Reply with only JSON in exactly this shape:
+{"bucs":[{"name":"","domain":"","process_area":"","pa_code":"ABC","actor":"","goal":"","start_event":"","main_flow":[""],"inputs":[{"name":"","entity_type":"","status":"","external":""}],"outputs":[{"name":"","entity_type":"","status":"","external":"","filed":false}],"rules":[""],"current_support":"","pain_points":[""]}]}
+
+Interviewee: ${AI.interviewee || '-'} (${AI.role || '-'})
+Interview notes:
+"""
+${AI.notes}
+"""`;
+}
+function fromPackageBuc(x, layer, source){
+  const sup = String(x.current_support || '');
+  let support = 'Unknown', supportApp = '';
+  const m = /^\s*(manual|spreadsheet|application|mixed|not performed|unknown)\s*:?\s*(.*)$/i.exec(sup);
+  if(m){ support = SUPPORT.find(s=>s.toLowerCase()===m[1].toLowerCase()) || 'Unknown'; supportApp = m[2]||''; } else if(/excel/i.test(sup)) support='Spreadsheet';
+  let inputs = [], outputs = [];
+  const io = r => ({name:r.name||'', type:r.entity_type||r.type||'', status:r.status||'', party:r.external||r.party||'', filed:!!r.filed});
+  if((x.inputs && x.inputs.length) || (x.outputs && x.outputs.length) || !(x.artifacts && x.artifacts.length)){ inputs = (x.inputs||[]).map(io); outputs = (x.outputs||[]).map(io); }
+  else for(const a of x.artifacts||[]){ const u = (a.usage||'R').toUpperCase(); const base = {name:a.name, type:a.entity_type||'', status:'', party:'', filed:false};
+    if(/[RU]/.test(u)) inputs.push({...base}); if(/[CU]/.test(u)) outputs.push({...base}); if(u.includes('D')) outputs.push({...base, status:'Cancelled'}); if(u.includes('A')) outputs.push({...base, filed:true}); }
+  return normalizeBuc({code: (x.id && /^[A-Z]{2,5}-\d+$/i.test(x.id)) ? x.id : '', name:x.name, layer, domain:x.domain||'', pa:x.process_area||'', paCode:x.pa_code||'', actor:x.actor||'', goal:x.goal||'',
+    startEvent:x.start_event||'', flow:x.main_flow||[], inputs, outputs, rules:x.rules||[], support, supportApp, pains:x.pain_points||[], replaces:x.replaces||[],
+    source: Object.assign({interviewee:'', role:'', date:''}, source || x.source || {}), review:'draft'});
+}
+function viewInterview(main){
+  const has = !!aiAvailable();
+  main.innerHTML = head('Wawancara + AI', 'Tempel atau ketik catatan wawancara. AI menyusun draf BUC memakai nama yang sudah ada di glosarium, lalu Anda meninjau setiap draf sebelum disimpan.') +
+  (has || S.mode==='loading' ? '' : `<div class="banner warn">${aiUnavailableText()}</div>`) +
+  `<div class="form"><section><h2>Catatan wawancara</h2>
+    <div class="grid3"><div class="row"><label class="f" for="ai-int">Narasumber</label><input class="txt" id="ai-int" value="${esc(AI.interviewee)}"></div>
+    <div class="row"><label class="f" for="ai-role">Jabatan</label><input class="txt" id="ai-role" value="${esc(AI.role)}"></div>
+    <div class="row"><label class="f" for="ai-date">Tanggal</label><input class="txt" type="date" id="ai-date" value="${esc(AI.date)}"></div></div>
+    <div class="grid2"><div class="row"><span class="f" style="display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:4px">Lapisan</span><div class="seg" role="group"><button data-ai-layer="manual" aria-pressed="${AI.layer==='manual'}">As-is (manual)</button><button data-ai-layer="computerized" aria-pressed="${AI.layer==='computerized'}">To-be (aplikasi)</button></div></div>
+    <div class="row"><label class="f" for="ai-lang">Bahasa isi BUC</label><select class="txt" id="ai-lang"><option ${AI.lang==='English'?'selected':''}>English</option><option value="Bahasa Indonesia" ${AI.lang!=='English'?'selected':''}>Bahasa Indonesia</option></select></div></div>
+    <div class="row"><label class="f" for="ai-notes">Catatan (boleh campur bahasa, poin-poin, atau transkrip)</label><textarea class="txt" id="ai-notes" style="min-height:220px" placeholder="Contoh: Bu Rina (Purchasing) cerita, kalau stok bahan baku di bawah minimum, kepala gudang isi form PR, ditandatangani, lalu dibawa ke Plant Manager untuk disetujui kalau di atas 50 juta…">${esc(AI.notes)}</textarea></div>
+    <div class="toolbar"><button class="primary" id="ai-go" ${AI.busy ? 'disabled' : ''}>${AI.busy?'Menyusun…':'Susun draf BUC'}</button>${AI.busy?'<button class="ghost" id="ai-stop">Hentikan</button>':''}<span class="muted" id="ai-msg">${esc(AI.msg)}</span></div>
+  </section></div>
+  <div class="drafts">${S.aiDrafts.length?`<h2>Draf untuk ditinjau (${S.aiDrafts.length})</h2><div class="toolbar"><button class="ghost" data-ai="saveall" ${S.canWrite?'':'disabled'}>Simpan semua sebagai draf</button><button class="ghost" data-ai="clear">Buang semua</button></div>`:''}
+  <div class="cards">${S.aiDrafts.map(d=>{ const b=d.buc; return `<article class="card"><div class="gid">${esc(b.paCode||'?')} · ${esc(b.pa)}</div><h3>${esc(b.name)}</h3><div class="muted" style="font-size:13px">${esc(b.actor)}</div>
+    <h4>Input</h4>${ioList(b.inputs,'in')||'<div class="muted">—</div>'}<h4>Output</h4>${ioList(b.outputs,'out')||'<div class="muted">—</div>'}
+    <div class="toolbar" style="margin-top:10px"><button class="primary small" data-ai="review" data-k="${d.key}">Tinjau & simpan</button><button class="ghost small" data-ai="save" data-k="${d.key}" ${S.canWrite?'':'disabled'}>Simpan sebagai draf</button><button class="ghost small" data-ai="drop" data-k="${d.key}">Buang</button></div></article>`.replace(' · ',', '); }).join('')}</div></div>`;
+  const bind = (id, k) => { const el = $(id); if(el) el.addEventListener('input', e=>{ AI[k] = e.target.value; }); };
+  bind('#ai-int','interviewee'); bind('#ai-role','role'); bind('#ai-date','date'); bind('#ai-notes','notes');
+  const lang = $('#ai-lang'); if(lang) lang.onchange = e=>{ AI.lang = e.target.value; };
+  const goBtn = $('#ai-go'); if(goBtn) goBtn.onclick = runAI;
+  const stop = $('#ai-stop'); if(stop) stop.onclick = () => AI.ctl && AI.ctl.abort();
+}
+function aiUnavailableText(){
+  if(S.mode==='local') return 'Asisten AI belum diatur untuk versi ini. Atur di <button class="lnk" data-go="#/data">Ekspor & pengaturan → Asisten AI</button>: pakai server AI organisasi atau Ollama. Bila aplikasi ini seharusnya dibuka dari claude.ai, buka dari panel artifact agar memakai Claude. Anda tetap bisa mengisi BUC manual lewat <button class="lnk" data-go="#/new">BUC baru</button>.';
+  return 'Asisten AI tidak tersedia di akun atau organisasi ini (mungkin dinonaktifkan admin). Anda tetap bisa mengisi BUC manual lewat <button class="lnk" data-go="#/new">BUC baru</button>.';
+}
+async function runAI(){
+  const notesEl = $('#ai-notes'); if(notesEl) AI.notes = notesEl.value;
+  if(!aiAvailable()){
+    if(S.mode==='loading'){ AI.msg = 'Masih menghubungkan ke Claude, coba lagi dalam beberapa detik.'; }
+    else { AI.msg = ''; await ask({title:'Asisten AI tidak tersedia', body:aiUnavailableText(), okLabel:'Mengerti', cancelLabel:''}); }
+    viewInterview($('#main')); return;
+  }
+  if(!AI.notes.trim()){ AI.msg = 'Isi catatan wawancara dulu.'; viewInterview($('#main')); return; }
+  AI.busy = true; AI.msg = `Menyusun dengan ${aiLabel()}… biasanya 30 detik sampai 2 menit.`; AI.ctl = new AbortController(); viewInterview($('#main'));
+  const t0 = Date.now(); const tick = setInterval(()=>{ const m = $('#ai-msg'); if(m && AI.busy && !AI.streaming) m.textContent = `Menyusun dengan ${aiLabel()}… ${Math.round((Date.now()-t0)/1000)} detik`; }, 1000);
+  try{
+    const res = await aiJson(buildPrompt(), {signal: AI.ctl.signal, onText: ({text}) => { AI.streaming = true; const m = $('#ai-msg'); if(m) m.textContent = `Menulis draf… ${text.length.toLocaleString('id-ID')} karakter`; }});
+    const list = (res && Array.isArray(res.bucs)) ? res.bucs : (Array.isArray(res) ? res : []);
+    const source = {interviewee:AI.interviewee, role:AI.role, date:AI.date};
+    const codes = paCodeMap();
+    for(const x of list){ const b = fromPackageBuc(x, AI.layer, source); const k = codes[norm(b.pa)]; if(k) b.paCode = k; S.aiDrafts.push({key:uid(), buc:b}); }
+    AI.msg = list.length ? `${list.length} draf BUC siap ditinjau.` : 'AI tidak menghasilkan BUC. Coba tambahkan detail di catatan.';
+  }catch(e){
+    const m = {network:'Tidak bisa menghubungi server AI. Periksa pengaturan Asisten AI dan jaringan.', unauthorized:'Server AI menolak akses (belum login atau tidak berhak).', upstream_error:'Server AI gagal menghubungi model: '+(e&&e.message||''), not_configured:'Asisten AI belum diatur.', empty_prompt:'Catatan kosong.', bad_response:'Jawaban server AI tidak dikenali.', cancelled:'Dihentikan.', not_granted:'Izin memakai AI ditolak. Anda tetap bisa mengisi BUC manual.', rate_limited:'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.', prompt_too_large:'Catatan terlalu panjang. Pecah menjadi beberapa bagian.', invalid_json:'Jawaban AI tidak bisa dibaca. Coba lagi atau persingkat catatan.', refused:'AI menolak permintaan ini.'};
+    AI.msg = m[e && e.code] || ('Gagal menyusun (' + (e && e.code || 'galat') + ').');
+  }
+  clearInterval(tick); AI.busy = false; AI.streaming = false; AI.ctl = null; renderNav(); if(parseRoute().name==='interview') viewInterview($('#main'));
+}
+async function aiAction(btn){
+  const a = btn.dataset.ai, k = btn.dataset.k; const d = S.aiDrafts.find(x=>x.key===k);
+  if(a==='drop'){ S.aiDrafts = S.aiDrafts.filter(x=>x.key!==k); viewInterview($('#main')); renderNav(); }
+  if(a==='clear'){ if(await ask({title:'Buang semua draf?', okLabel:'Buang', danger:true})){ S.aiDrafts = []; viewInterview($('#main')); renderNav(); } }
+  if(a==='review'){ S.editing = {buc:clone(d.buc), key:d.key}; ED = null; go('#/new'); }
+  if(a==='save' || a==='saveall'){
+    const list = a==='save' ? [d] : [...S.aiDrafts]; btn.disabled = true; let n = 0;
+    for(const x of list){ const b = normalizeBuc(clone(x.buc)); if(!b.paCode) b.paCode = deriveCode(b.pa||'Area', new Set(Object.values(paCodeMap()))); b.code = nextCode(b.paCode);
+      if(await Store.saveBuc(uid(), b)){ n++; S.aiDrafts = S.aiDrafts.filter(y=>y.key!==x.key); } else break; }
+    toast(`${n} BUC disimpan sebagai draf.`); viewInterview($('#main')); renderNav();
+  }
+}
+
+// ================= gaps =================
+function viewGaps(main){
+  const repo = analyze(), G = repo.gaps, bl = bucLink;
+  const nm = id => esc(repo.byId[id] ? repo.byId[id].name : '');
+  const S_ = [
+    ['status_mismatch','Input dengan status yang tidak pernah dihasilkan','Dokumennya ada, tetapi tidak ada BUC yang menghasilkan status yang dibutuhkan. Tanda kuat ada proses di tengah yang belum diwawancarai, atau kata status yang berbeda.', x=>`${bl(x.buc)} ${nm(x.buc)} butuh <b>${esc(x.artifact)} [${esc(x.needs)}]</b>; tersedia: ${x.available.map(v=>esc(v||'tanpa status')).join(', ')}`],
+    ['no_producer','Input yang tidak dihasilkan BUC mana pun','Proses hulu yang belum diwawancarai, atau dokumen dari pihak luar yang belum ditandai.', x=>`<b>${esc(x.artifact)}</b> dipakai oleh ${x.used_by.map(bl).join(', ')}${x.as_is?` <span class="muted">(saat ini dibuat di kertas oleh ${x.as_is.map(bl).join(', ')})</span>`:''}`],
+    ['no_master_owner','Master data tanpa pengelola','Master/reference data dipakai tetapi tidak ada BUC yang memeliharanya.', x=>`<b>${esc(x.artifact)}</b> dipakai oleh ${x.used_by.map(bl).join(', ')}`],
+    ['dead_end','Output yang tidak dipakai BUC lain','Bisa status akhir yang wajar, atau proses hilir yang belum diwawancarai. Tandai “Diarsip” atau “Ke luar” bila memang berakhir di situ.', x=>`<b>${esc(x.artifact)}</b> dari ${x.from.map(bl).join(', ')}`],
+    ['isolated','BUC tanpa sambungan','Tidak berbagi dokumen dengan BUC lain maupun pihak luar.', x=>`${bl(x.buc)} ${nm(x.buc)}`],
+    ['incomplete','BUC yang belum lengkap','Isian wajib yang masih kosong.', x=>`${bl(x.buc)} ${nm(x.buc)}: <span class="err">${x.missing.join(', ')}</span>`],
+    ['naming','Kemungkinan sinonim','Nama mirip yang mungkin sama. Gabungkan di Glosarium bila benar.', x=>`${esc(x.a)} ≈ ${esc(x.b)} <span class="muted">(${x.cat})</span>`],
+    ['unmapped','Dokumen kertas tanpa padanan data','Dokumen as-is yang belum dipetakan ke entity to-be. Petakan di Glosarium.', x=>`<b>${esc(x.document)}</b> <span class="muted">(${x.used_by.map(id=>esc(repo.byId[id].code)).join(', ')})</span>`],
+  ];
+  let h = head('Celah', 'Temuan otomatis dari sambungan input/output. Jadikan bahan pertanyaan untuk wawancara berikutnya.') + `<div class="toolbar">${layerSeg()}</div><div class="gaps">`; let any = false;
+  for(const [k,t,why,f] of S_){ const arr = G[k]||[]; if(!arr.length) continue; any = true; h += `<section><h2>${t} (${arr.length})</h2><p class="note">${why}</p><ul>${arr.map(x=>`<li>${f(x)}</li>`).join('')}</ul></section>`; }
+  main.innerHTML = h + (any ? '' : (S.bucs.size ? '<p>Tidak ada celah yang terdeteksi.</p>' : emptyState())) + '</div>';
+}
+// ================= glossary & merge =================
+async function renameEverywhere(kind, from, to, artName){
+  if(!to || norm(from)===norm(to) && from===to) return;
+  const ops = [];
+  for(const [id, b0] of S.bucs){
+    const b = clone(b0); let ch = false;
+    const fix = (obj, key) => { if(norm(obj[key])===norm(from)){ obj[key] = to; ch = true; } };
+    if(kind==='domain') fix(b,'domain');
+    if(kind==='pa') fix(b,'pa');
+    if(kind==='actor') fix(b,'actor');
+    if(kind==='art'){ for(const r of [...(b.inputs||[]), ...(b.outputs||[])]) fix(r,'name'); for(const r of b.replaces||[]){ fix(r,'document'); fix(r,'entity'); } }
+    if(kind==='status'){ for(const r of [...(b.inputs||[]), ...(b.outputs||[])]) if(norm(r.name)===norm(artName)) fix(r,'status'); }
+    if(kind==='paCode' && norm(b.pa)===norm(artName)){ const old = b.paCode; b.paCode = to; if((b.code||'').startsWith(old+'-')) b.code = to + b.code.slice(old.length); ch = true; }
+    if(ch) ops.push({id, buc:b});
+  }
+  if(kind==='art' && S.settings.doc2ent){ const d = Object.assign({}, S.settings.doc2ent); let ch=false; for(const k of Object.keys(d)){ if(norm(k)===norm(from)){ d[to]=d[k]; delete d[k]; ch=true; } if(norm(d[k]||'')===norm(from)){ d[k]=to; ch=true; } } if(ch) await Store.saveSettings({doc2ent:d}); }
+  if(kind==='domain' && S.settings.domains[from]){ const d = Object.assign({}, S.settings.domains); d[to] = Object.assign({}, d[from], d[to]||{}); delete d[from]; await Store.saveSettings({domains:d}); }
+  if(!ops.length){ toast('Tidak ada yang berubah.'); return; }
+  const n = await Store.bulk(ops); toast(`${n} BUC diperbarui.`);
+}
+function viewGlossary(main){
+  const v = vocab(); const repo = analyze();
+  const byCount = o => Object.values(o).sort((a,b)=>a.name.localeCompare(b.name));
+  const ents = byCount(v.arts).filter(a=>a.layers.has('computerized')).map(a=>a.name);
+  const docs = byCount(v.arts).filter(a=>a.layers.has('manual'));
+  const d2e = S.settings.doc2ent || {};
+  const rn = (kind, name, extra='') => `<button class="ghost small" data-rn="${kind}" data-name="${esc(name)}" data-extra="${esc(extra)}" ${S.canWrite?'':'disabled'}>Ganti / gabung</button>`;
+  const naming = repo.gaps.naming;
+  main.innerHTML = head('Glosarium', 'Satu-satunya kesepakatan antar pewawancara adalah nama. Seragamkan di sini; perubahan diterapkan ke semua BUC.', `<button class="ghost" data-exp="glossary">Salin glosarium untuk skill BUC</button>`) +
+  (naming.length ? `<h2>Kemungkinan sinonim (${naming.length})</h2><div class="tablebox"><table><thead><tr><th>Jenis</th><th>Nama A</th><th>Nama B</th><th>Gabungkan</th></tr></thead><tbody>${naming.map(x=>{ const kind = {'dokumen/entity':'art','process area':'pa','aktor':'actor','domain':'domain'}[x.cat];
+    return `<tr><td class="muted">${x.cat}</td><td>${esc(x.a)}</td><td>${esc(x.b)}</td><td><button class="ghost small" data-merge="${kind}" data-from="${esc(x.b)}" data-to="${esc(x.a)}" ${S.canWrite?'':'disabled'}>Jadikan “${esc(x.a)}”</button> <button class="ghost small" data-merge="${kind}" data-from="${esc(x.a)}" data-to="${esc(x.b)}" ${S.canWrite?'':'disabled'}>Jadikan “${esc(x.b)}”</button></td></tr>`; }).join('')}</tbody></table></div>` : '') +
+  `<h2>Dokumen dan data entity</h2><p class="note">Klik status untuk mengganti kata statusnya di semua BUC (mis. “Authorized” menjadi “Approved”).</p>
+  <div class="tablebox"><table><thead><tr><th>Nama</th><th>Lapisan</th><th>Tipe</th><th>Status yang dipakai</th><th>BUC</th><th></th></tr></thead><tbody>
+  ${byCount(v.arts).map(a=>`<tr><td><b>${esc(a.name)}</b></td><td class="muted">${[...a.layers].map(l=>l==='manual'?'as-is':'to-be').join(', ')}</td><td class="muted">${[...a.types].map(esc).join(', ')}</td>
+    <td>${[...a.statuses].map(s=>`<button class="chip lnk" style="text-decoration:none" data-rn="status" data-name="${esc(s)}" data-extra="${esc(a.name)}" ${S.canWrite?'':'disabled'}>${esc(s)}</button>`).join(' ')}</td><td>${a.count}</td><td>${rn('art', a.name)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Belum ada.</td></tr>'}</tbody></table></div>
+  <h2>Process area</h2><div class="tablebox"><table><thead><tr><th>Kode</th><th>Nama</th><th>Domain</th><th>BUC</th><th></th></tr></thead><tbody>
+  ${byCount(v.pas).map(p=>`<tr><td><button class="lnk" data-rn="paCode" data-name="${esc(p.code||'')}" data-extra="${esc(p.name)}" ${S.canWrite?'':'disabled'}>${esc(p.code||'—')}</button></td><td><b>${esc(p.name)}</b></td><td class="muted">${esc(p.domain||'')}</td><td>${p.count}</td><td>${rn('pa', p.name)}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Belum ada.</td></tr>'}</tbody></table></div>
+  <h2>Business domain</h2><p class="note">Urutan menentukan posisi di peta; kelompok (mis. Core, Support, Management) tampil di bawah nama domain.</p><div class="tablebox"><table><thead><tr><th>Domain</th><th>Urutan</th><th>Kelompok</th><th>BUC</th><th></th></tr></thead><tbody>
+  ${byCount(v.domains).map(d=>{ const m = S.settings.domains[d.name] || {}; return `<tr><td><b>${esc(d.name)}</b></td><td><input class="txt" type="number" min="1" style="width:80px" data-dom-order="${esc(d.name)}" value="${m.order||''}" aria-label="Urutan ${esc(d.name)}"></td><td><input class="txt" style="width:150px" data-dom-group="${esc(d.name)}" value="${esc(m.group||'')}" list="dl-groups" aria-label="Kelompok ${esc(d.name)}"></td><td>${d.count}</td><td>${rn('domain', d.name)}</td></tr>`; }).join('') || '<tr><td colspan="5" class="muted">Belum ada.</td></tr>'}</tbody></table></div>
+  <datalist id="dl-groups"><option value="Core"><option value="Support"><option value="Management"></datalist>
+  <h2>Aktor</h2><div class="tablebox"><table><thead><tr><th>Peran</th><th>BUC</th><th></th></tr></thead><tbody>${byCount(v.actors).map(a=>`<tr><td><b>${esc(a.name)}</b></td><td>${a.count}</td><td>${rn('actor', a.name)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">Belum ada.</td></tr>'}</tbody></table></div>
+  ${ents.length && docs.length ? `<h2>Padanan dokumen kertas ke data entity</h2><p class="note">Jembatan as-is ke to-be. Dipakai untuk kandidat sistem dan untuk melihat dokumen mana yang belum punya tempat di aplikasi.</p>
+  <div class="tablebox"><table><thead><tr><th>Dokumen kertas</th><th>Data entity</th></tr></thead><tbody>${docs.map(d=>`<tr><td>${esc(d.name)}</td><td><select class="txt" style="max-width:320px" data-d2e="${esc(d.name)}" aria-label="Padanan ${esc(d.name)}"><option value="">—</option>${ents.map(e=>`<option ${norm(repo.d2e[norm(d.name)]||'')===norm(e)?'selected':''}>${esc(e)}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>` : ''}`;
+  $$('[data-dom-order],[data-dom-group]', main).forEach(inp => inp.addEventListener('change', async e=>{
+    const name = e.target.dataset.domOrder || e.target.dataset.domGroup; const d = clone(S.settings.domains || {}); d[name] = d[name] || {};
+    if(e.target.dataset.domOrder) d[name].order = +e.target.value || undefined; else d[name].group = e.target.value;
+    await Store.saveSettings({domains:d}); toast('Tersimpan.'); }));
+  $$('[data-d2e]', main).forEach(sel => sel.addEventListener('change', async e=>{ const d = clone(S.settings.doc2ent || {}); if(e.target.value) d[e.target.dataset.d2e] = e.target.value; else delete d[e.target.dataset.d2e]; await Store.saveSettings({doc2ent:d}); toast('Padanan disimpan.'); }));
+}
+async function renameAction(btn){
+  const kind = btn.dataset.rn, name = btn.dataset.name, extra = btn.dataset.extra;
+  const labels = {art:'dokumen/entity', pa:'process area', actor:'aktor', domain:'domain', status:`status pada ${extra}`, paCode:`kode area ${extra}`};
+  const to = await ask({title:`Ganti nama ${labels[kind]}`, body:`Semua BUC yang memakai “${esc(name)}” akan diubah. Jika nama baru sudah ada, keduanya tergabung menjadi satu.`, input:name, okLabel:'Terapkan'});
+  if(to===null || !to.trim() || to.trim()===name) return;
+  await renameEverywhere(kind, name, kind==='paCode' ? to.trim().toUpperCase() : to.trim(), extra);
+}
+// ================= CRUD & systems =================
+function viewCrud(main){
+  const repo = analyze(); const dc = repo.dclass;
+  const cols = new Map(); repo.bucs.forEach(b=>crudOf(b).forEach(a=>{ const k = norm(dc(a.name)); if(!cols.has(k)) cols.set(k, dc(a.name)); }));
+  const owner = {}; repo.systems.forEach(s=>s.owns.forEach(o=>owner[norm(o)] = s.id));
+  const sysIdx = Object.fromEntries(repo.systems.map((s,i)=>[s.id,i]));
+  const keys = [...cols.keys()].sort((a,b)=>((sysIdx[owner[a]] ?? 999) - (sysIdx[owner[b]] ?? 999)) || cols.get(a).localeCompare(cols.get(b)));
+  const groups = []; keys.forEach(k=>{ const o = owner[k] || '—'; if(!groups.length || groups[groups.length-1].o!==o) groups.push({o, n:0, first:k}); groups[groups.length-1].n++; });
+  const firsts = new Set(groups.map(g=>g.first));
+  let h = head('Matriks CRUD', 'Baris: BUC per kandidat sistem. Kolom: kelas data per sistem pemiliknya. C buat, U ubah/setujui, R baca, A arsip. Blok C/U di diagonal menandakan sistem yang kohesif; huruf di luar blok adalah antarmuka antar-sistem.') + `<div class="toolbar">${layerSeg()}</div>`;
+  if(!S.bucs.size){ main.innerHTML = h + emptyState(); return; }
+  h += `<div class="tablebox"><table class="crud"><thead><tr><th></th>${groups.map(g=>`<th class="sysh" colspan="${g.n}">${g.o}</th>`).join('')}</tr><tr><th>BUC</th>${keys.map(k=>`<th class="col ${firsts.has(k)?'bl':''}" title="${esc(cols.get(k))}">${esc(cols.get(k))}</th>`).join('')}</tr></thead><tbody>`;
+  for(const s of repo.systems){
+    const rows = s.members.flatMap(m=>repo.pas.get(m).bucs).map(id=>repo.byId[id]); if(!rows.length) continue;
+    h += `<tr class="sys"><td colspan="${keys.length+1}">${s.id}, ${s.members.map(m=>esc(repo.pas.get(m).code+' '+repo.pas.get(m).name)).join(' + ')}</td></tr>`;
+    for(const b of rows){ const m = {}; crudOf(b).forEach(a=>{ const k = norm(dc(a.name)); m[k] = [...new Set((m[k]||'')+a.usage)].join(''); });
+      h += `<tr><td class="rowh">${bucLink(b.id)} ${esc(b.name.length>34 ? b.name.slice(0,33)+'…' : b.name)}</td>${keys.map(k=>{ const u = m[k]||''; const c = u.includes('C')?'C':u.includes('U')?'U':u?'R':''; return `<td class="c ${c} ${firsts.has(k)?'bl':''}">${u}</td>`; }).join('')}</tr>`; }
+  }
+  main.innerHTML = h + '</tbody></table></div>';
+}
+function viewSystems(main){
+  const repo = analyze();
+  main.innerHTML = head('Kandidat sistem', 'Process area yang sama-sama membuat atau mengubah data yang sama dikelompokkan menjadi satu sistem. Usulan awal untuk diskusi, bukan keputusan arsitektur.') +
+  `<div class="toolbar">${layerSeg()}<label class="muted" for="aff" style="font-size:13px">Kepekaan penggabungan</label><input type="range" id="aff" min="0.1" max="0.7" step="0.05" value="${S.settings.affinity||0.3}" aria-label="Ambang afinitas"><span class="muted" id="affv" style="font-size:13px">${S.settings.affinity||0.3}</span></div>` +
+  (S.bucs.size ? `<div class="cards">${repo.systems.map(s=>{ const ps = s.members.map(m=>repo.pas.get(m)); const nb = ps.reduce((a,p)=>a+p.bucs.length,0); const need = Math.round(ps.reduce((a,p)=>a+p.need*p.bucs.length,0)/Math.max(1,nb));
+    return `<article class="card" style="border-top:6px solid ${needColor(need)}"><h3>${s.id}</h3><div style="font-weight:600;margin:2px 0 6px">${ps.map(p=>`<button class="lnk" data-go="#/area/${encodeURIComponent(p.code)}">${esc(p.code)}</button> ${esc(p.name)}`).join(', ')}</div>
+    <div class="muted" style="font-size:13px">Kebutuhan rata-rata ${need}/100, ${nb} BUC</div><h4>Data yang dimiliki</h4><div class="chips">${s.owns.map(o=>`<span class="chip">${esc(o)}</span>`).join('')||'<span class="muted">—</span>'}</div>
+    <h4>Membutuhkan data dari</h4>${s.reads.length?`<ul style="margin:0;padding-left:18px">${s.reads.map(r=>`<li>${r.system}: ${r.items.map(esc).join(', ')}</li>`).join('')}</ul>`:'<span class="muted">—</span>'}</article>`; }).join('')}</div>` : emptyState());
+  const aff = $('#aff'); if(aff){ aff.oninput = e=>{ $('#affv').textContent = e.target.value; }; aff.onchange = async e=>{ await Store.saveSettings({affinity:+e.target.value}); }; }
+}
+// ================= export / import / settings =================
+function toPackage(layer){
+  const repo = analyze(); const list = repo.all.filter(b=>b.layer===layer).sort((a,b)=>String(a.code).localeCompare(b.code));
+  return {package:{name:(S.settings.org||'Atlas BUC') + (layer==='manual'?' (as-is)':' (to-be)'), organization:S.settings.org||'', type:layer, version:'3'},
+    bucs:list.map(b=>({id:b.code, name:b.name, domain:b.domain, process_area:b.pa, pa_code:b.paCode, actor:b.actor, goal:b.goal, start_event:b.startEvent,
+      main_flow:b.flow, inputs:b.inputs.map(r=>({name:r.name, ...(layer==='computerized'?{entity_type:r.type}:{}), status:r.status, external:r.party})),
+      outputs:b.outputs.map(r=>({name:r.name, ...(layer==='computerized'?{entity_type:r.type}:{}), status:r.status, external:r.party, filed:r.filed})),
+      rules:b.rules, ...(layer==='computerized'?{replaces:b.replaces}:{}), current_support: b.support==='Application'||b.support==='Mixed' ? `${b.support}: ${b.supportApp}` : b.support,
+      pain_points:b.pains, source:b.source}))};
+}
+function toText(list){
+  const io = (arr, dir, comp) => arr.map(r=>`- ${r.name}${comp&&r.type?` (${r.type})`:''}${r.status?` [${r.status}]`:''}${r.party?` (${dir==='in'?'from':'to'}: ${r.party})`:''}${r.filed?' (filed)':''}`).join('\n');
+  return list.map(b=>{ const comp = b.layer==='computerized';
+    return `BUC ${b.code}: ${b.name}\n\nBusiness Domain:\n${b.domain}\n\nProcess Area:\n${b.pa} (${b.paCode})\n\nActor:\n${b.actor}\n\nGoal:\n${b.goal}\n\nMain Flow:\n${b.flow.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\n${comp?'Input Data':'Input Documents'}:\n${b.inputs.length?io(b.inputs,'in',comp):`None (starts by ${b.startEvent||'event'})`}\n\n${comp?'Output Data':'Output Documents'}:\n${io(b.outputs,'out',comp)}\n\nBusiness Rules:\n${b.rules.map(r=>'- '+r).join('\n')||'- None stated'}\n\nCurrent Support:\n${b.support}${b.supportApp?': '+b.supportApp:''}\n\nPain Points:\n${b.pains.map(r=>'- '+r).join('\n')||'- None stated'}`; }).join('\n\n---\n\n');
+}
+function glossaryText(){
+  const repo = analyze(); const v = vocab(); const L = ['# BUC Glossary (use these names exactly)', ''];
+  for(const d of repo.domains){ L.push(`## Business Domain: ${d.name}`); d.pas.forEach(p=>{ const last = p.bucs.map(id=>repo.byId[id].code).sort().pop(); L.push(`- Process Area: ${p.name} (${p.code}) — last BUC ID used: ${last}`); }); L.push(''); }
+  L.push('## Actor roles', ...Object.values(v.actors).map(a=>'- '+a.name).sort(), '', '## Documents and data entities (with statuses)');
+  Object.values(v.arts).sort((a,b)=>a.name.localeCompare(b.name)).forEach(a=>L.push(`- ${a.name}${a.types.size?` (${[...a.types][0]})`:''}${a.statuses.size?` — statuses: ${[...a.statuses].join(', ')}`:''}${S.settings.doc2ent&&S.settings.doc2ent[a.name]?` ⇒ ${S.settings.doc2ent[a.name]}`:''}`));
+  return L.join('\n');
+}
+function viewData(main){
+  const nm = S.bucs.size, man = [...S.bucs.values()].filter(b=>b.layer==='manual').length;
+  main.innerHTML = head('Ekspor & pengaturan', S.mode==='shared' ? 'Data tersimpan bersama untuk semua anggota tim yang membuka aplikasi ini.' : 'Data tersimpan di perangkat ini saja.') +
+  `<div class="form"><section><h2>Organisasi</h2><div class="grid2"><div class="row"><label class="f" for="org">Nama organisasi / unit</label><input class="txt" id="org" value="${esc(S.settings.org||'')}"></div><div class="row" style="align-self:end"><button class="ghost" id="orgSave" ${S.canWrite?'':'disabled'}>Simpan</button></div></div></section>
+  <section><h2>Data contoh (demo / simulasi)</h2><p class="note">Untuk presentasi, pelatihan pewawancara, atau mencoba fitur tanpa data nyata. BUC contoh ditandai “Contoh” dan bisa dihapus sekaligus.</p>
+    <div class="toolbar"><button class="ghost" data-sample="load" ${S.canWrite?'':'disabled'}>Muat data contoh</button><button class="danger" data-sample="remove" ${sampleCount() && S.canWrite?'':'disabled'}>Hapus data contoh (${sampleCount()})</button></div></section>
+  <section><h2>Ekspor</h2><p class="note">Paket JSON versi 3 bisa langsung diproses oleh skill buc-integrator. Teks BUC mengikuti format skill buc-manual/buc-computerized untuk ditempel ke Word.</p>
+    <div class="toolbar"><button class="ghost" data-exp="pkg-manual" ${man?'':'disabled'}>Paket as-is (${man})</button><button class="ghost" data-exp="pkg-computerized" ${nm-man?'':'disabled'}>Paket to-be (${nm-man})</button><button class="ghost" data-exp="text" ${nm?'':'disabled'}>Teks BUC</button><button class="ghost" data-exp="glossary" ${nm?'':'disabled'}>Glosarium</button><button class="ghost" data-exp="backup" ${nm?'':'disabled'}>Cadangan lengkap</button></div></section>
+  <section><h2>Impor</h2><p class="note">Tempel paket JSON (dari skill buc-manual/buc-computerized Section 4, versi 2 atau 3), beberapa paket dalam satu array, atau file cadangan dari aplikasi ini.</p>
+    <textarea class="txt" id="imp" style="min-height:140px;font-size:12.5px" placeholder='{"package": {...}, "bucs": [...]}'></textarea>
+    <div class="toolbar" style="margin-top:8px"><label style="font-size:14px"><input type="checkbox" id="impSkip" checked> Lewati BUC yang kodenya sudah ada</label><button class="primary" id="impGo" ${S.canWrite?'':'disabled'}>Impor</button><span class="muted" id="impMsg"></span></div></section>
+  <section><h2>Asisten AI</h2>${S.caps.sample ? '<p class="note">Aplikasi dibuka di Claude, jadi asisten memakai Claude langsung. Pengaturan di bawah hanya berlaku untuk versi PWA/server sendiri di perangkat ini.</p>' : '<p class="note">Untuk versi PWA/server sendiri. Pengaturan tersimpan di perangkat ini.</p>'}
+    ${(()=>{ const c = aiConfig(); return `<div class="grid3"><div class="row"><label class="f" for="aiMode">Penyedia</label><select class="txt" id="aiMode"><option value="off" ${c.mode==='off'?'selected':''}>Nonaktif</option><option value="proxy" ${c.mode==='proxy'?'selected':''}>Server AI organisasi (disarankan)</option><option value="ollama" ${c.mode==='ollama'?'selected':''}>Ollama langsung</option></select></div>
+      <div class="row"><label class="f" for="aiUrl">Alamat</label><input class="txt" id="aiUrl" value="${esc(c.url)}" placeholder="${c.mode==='ollama'?'http://server-ai:11434':'api/ai/draft'}"></div>
+      <div class="row" ${c.mode==='ollama'?'':'hidden'} id="aiModelRow"><label class="f" for="aiModel">Model Ollama</label><input class="txt" id="aiModel" value="${esc(c.model)}" placeholder="qwen3:14b"></div></div>
+      <div class="toolbar"><button class="ghost" id="aiSave">Simpan & uji koneksi</button><span class="muted" id="aiTest"></span></div>`; })()}</section>
+  <section><h2>Tampilan</h2><div class="seg" role="group" aria-label="Tema"><button data-theme-set="auto">Ikuti sistem</button><button data-theme-set="light">Terang</button><button data-theme-set="dark">Gelap</button></div></section>
+  <section><h2>Zona berbahaya</h2><button class="danger" id="wipe" ${nm && S.canWrite ?'':'disabled'}>Hapus semua BUC</button></section></div>`;
+  $('#orgSave').onclick = async ()=>{ if(await Store.saveSettings({org:$('#org').value.trim()})) toast('Tersimpan.'); };
+  $('#impGo').onclick = doImport;
+  $('#aiMode').onchange = e => { $('#aiModelRow').hidden = e.target.value!=='ollama'; $('#aiUrl').placeholder = e.target.value==='ollama' ? 'http://server-ai:11434' : 'api/ai/draft'; };
+  $('#aiSave').onclick = async () => { const c = {mode:$('#aiMode').value, url:$('#aiUrl').value.trim(), model:$('#aiModel').value.trim() || 'qwen3:14b'}; saveAiConfig(c); $('#aiTest').textContent = 'Menguji…'; $('#aiTest').textContent = await testAi(c); };
+  $('#wipe').onclick = async ()=>{ const r = await ask({title:'Hapus semua BUC?', body:`Ketik <b>HAPUS</b> untuk menghapus ${nm} BUC untuk semua pengguna.`, input:'', okLabel:'Hapus semua', danger:true}); if(r!=='HAPUS') return; const n = await Store.bulk([...S.bucs.keys()].map(id=>({id, del:true}))); toast(`${n} BUC dihapus.`); render(); };
+}
+async function exportAction(kind){
+  const repo = analyze(); const all = repo.all.slice().sort((a,b)=>String(a.code).localeCompare(b.code));
+  if(kind==='pkg-manual') return offerText('Paket BUC as-is (JSON v3)', JSON.stringify(toPackage('manual'), null, 2), 'buc_as-is.json');
+  if(kind==='pkg-computerized') return offerText('Paket BUC to-be (JSON v3)', JSON.stringify(toPackage('computerized'), null, 2), 'buc_to-be.json');
+  if(kind==='text') return offerText('Teks BUC', toText(all), 'buc.md');
+  if(kind==='glossary') return offerText('Glosarium untuk skill BUC', glossaryText(), 'glossary.md');
+  if(kind==='backup') return offerText('Cadangan lengkap', JSON.stringify({atlasBackup:1, exported:nowIso(), settings:S.settings, bucs:Object.fromEntries(S.bucs)}, null, 1), 'atlas-buc-backup.json');
+}
+async function doImport(){
+  const msg = $('#impMsg'); let data;
+  try{ data = JSON.parse($('#imp').value); }catch(e){ msg.textContent = 'JSON tidak valid.'; return; }
+  const skip = $('#impSkip').checked; const existing = new Set([...S.bucs.values()].map(b=>b.code));
+  const ops = [];
+  if(data && data.atlasBackup){ for(const [id,b] of Object.entries(data.bucs||{})) if(!(skip && existing.has(b.code))) ops.push({id, buc:b}); if(data.settings) await Store.saveSettings(data.settings); }
+  else { const pkgs = Array.isArray(data) ? data : [data];
+    for(const p of pkgs){ if(!p || !Array.isArray(p.bucs)) continue; const layer = ((p.package||{}).type||'manual').toLowerCase()==='computerized' ? 'computerized' : 'manual';
+      for(const x of p.bucs){ const b = fromPackageBuc(x, layer); if(skip && b.code && existing.has(b.code)) continue; if(!b.paCode) b.paCode = deriveCode(b.pa||'Area', new Set(Object.values(paCodeMap())));
+        if(!b.code) b.code = b.paCode + '-' + String(ops.filter(o=>o.buc.paCode===b.paCode).length + 1 + Math.max(0,...[...S.bucs.values()].filter(y=>y.paCode===b.paCode).map(y=>seqOf(y.code)).filter(n=>n<999))).padStart(2,'0');
+        existing.add(b.code); ops.push({id:uid(), buc:b}); } } }
+  if(!ops.length){ msg.textContent = 'Tidak ada BUC baru yang bisa diimpor.'; return; }
+  msg.textContent = `Mengimpor ${ops.length} BUC…`; const n = await Store.bulk(ops); msg.textContent = `${n} BUC diimpor.`; $('#imp').value = '';
+}
+function applyTheme(t){ try{ localStorage.setItem('atlas-theme', t); }catch(e){} if(t==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); render(); }
+
+// ================= sample data (demo / simulasi) =================
+const SAMPLE = {"bucs":{"demo-pur-01":{"code":"PUR-01","name":"Submit Material Purchase Request","layer":"manual","domain":"Supply Chain","pa":"Procurement","paCode":"PUR","actor":"Warehouse Supervisor","goal":"To formally request replenishment of raw materials when stock reaches the minimum level.","startEvent":"","flow":["Warehouse Supervisor checks the Stock Card for materials below minimum level.","Warehouse Supervisor prepares the Purchase Request Form with material code, quantity, and required date.","Warehouse Supervisor signs the Purchase Request Form.","Warehouse Supervisor submits the Purchase Request Form to the Purchasing section."],"inputs":[{"name":"Stock Card","type":"","status":"","party":"","filed":false}],"outputs":[{"name":"Purchase Request Form","type":"","status":"Submitted","party":"","filed":false}],"rules":["A Purchase Request Form must be raised only for materials at or below minimum stock.","Each Purchase Request Form must be signed by the Warehouse Supervisor."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-pur-02":{"code":"PUR-02","name":"Approve Purchase Request","layer":"manual","domain":"Supply Chain","pa":"Procurement","paCode":"PUR","actor":"Plant Manager","goal":"To ensure purchase requests are justified before purchasing proceeds.","startEvent":"","flow":["Plant Manager reviews the Purchase Request Form against the Production Plan Sheet.","Plant Manager signs the Purchase Request Form as approved.","Plant Manager returns the approved Purchase Request Form to Purchasing."],"inputs":[{"name":"Purchase Request Form","type":"","status":"Submitted","party":"","filed":false},{"name":"Production Plan Sheet","type":"","status":"","party":"","filed":false}],"outputs":[{"name":"Purchase Request Form","type":"","status":"Approved","party":"","filed":false}],"rules":["Requests above IDR 50 million require Plant Manager approval."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-pur-03":{"code":"PUR-03","name":"Select Supplier and Issue Purchase Order","layer":"manual","domain":"Supply Chain","pa":"Procurement","paCode":"PUR","actor":"Purchasing Officer","goal":"To obtain materials at the best terms from an approved supplier.","startEvent":"","flow":["Buyer reviews the approved Purchase Request Form.","Buyer requests quotations and compares them on the Quotation Comparison Sheet.","Buyer prepares the Purchase Order Form for the selected supplier.","Buyer files a copy of the Purchase Order Form in the Purchase Order Register.","Buyer sends the Purchase Order Form to the supplier."],"inputs":[{"name":"Purchase Request Form","type":"","status":"Approved","party":"","filed":false},{"name":"Quotation Comparison Sheet","type":"","status":"","party":"","filed":false},{"name":"Approved Supplier List","type":"","status":"","party":"","filed":false}],"outputs":[{"name":"Purchase Order Form","type":"","status":"Issued","party":"","filed":false},{"name":"Purchase Order Form","type":"","status":"","party":"","filed":true},{"name":"Purchase Order Register","type":"","status":"","party":"","filed":true}],"rules":["At least three quotations are required for orders above IDR 25 million.","Only suppliers on the Approved Supplier List may be selected."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-pur-04":{"code":"PUR-04","name":"Follow Up Supplier Delivery","layer":"manual","domain":"Supply Chain","pa":"Procurement","paCode":"PUR","actor":"Purchasing Officer","goal":"To ensure ordered materials arrive on the required date.","startEvent":"","flow":["Buyer reviews the Purchase Order Register weekly for open orders.","Buyer contacts suppliers for late deliveries.","Buyer updates the Purchase Order Register with the confirmed delivery date."],"inputs":[{"name":"Purchase Order Register","type":"","status":"","party":"","filed":false}],"outputs":[{"name":"Purchase Order Register","type":"","status":"","party":"","filed":false}],"rules":["Orders overdue by more than 3 days must be escalated to the Plant Manager."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-rcv-01":{"code":"RCV-01","name":"Receive Supplier Delivery","layer":"manual","domain":"Supply Chain","pa":"Goods Receiving","paCode":"RCV","actor":"Warehouse Clerk","goal":"To check incoming goods against the purchase order before acceptance.","startEvent":"","flow":["Warehouse Clerk receives the Delivery Note from the driver.","Warehouse Clerk matches quantities with the Purchase Order Form copy.","Warehouse Clerk prepares the Goods Receipt Slip.","Warehouse Clerk places goods in quarantine and attaches a Quarantine Label."],"inputs":[{"name":"Delivery Note","type":"","status":"","party":"Supplier","filed":false},{"name":"Purchase Order Form","type":"","status":"Issued","party":"","filed":false}],"outputs":[{"name":"Goods Receipt Slip","type":"","status":"","party":"","filed":false},{"name":"Quarantine Label","type":"","status":"Quarantined","party":"","filed":false}],"rules":["Goods without a matching purchase order must not be unloaded."],"support":"Manual","supportApp":"","pains":["Goods Receipt Slip often lost before reaching QC","No visibility of quarantine stock"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-qci-01":{"code":"QCI-01","name":"Sample and Test Incoming Material","layer":"manual","domain":"Quality & Compliance","pa":"Incoming Quality Control","paCode":"QCI","actor":"QC Analyst","goal":"To verify incoming material conforms to specification before use.","startEvent":"","flow":["QC Analyst takes samples of the received lot listed on the Goods Receipt Slip.","QC Analyst tests samples against the Material Specification Sheet.","QC Analyst records results on the QC Test Record."],"inputs":[{"name":"Goods Receipt Slip","type":"","status":"","party":"","filed":false},{"name":"Material Specification Sheet","type":"","status":"","party":"","filed":false},{"name":"Certificate of Analysis","type":"","status":"","party":"Supplier","filed":false}],"outputs":[{"name":"QC Test Record","type":"","status":"Completed","party":"","filed":false}],"rules":["Each lot must be tested within 2 working days of receipt."],"support":"Spreadsheet","supportApp":"","pains":["Test results retyped into Excel"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-qci-02":{"code":"QCI-02","name":"Release or Reject Material Lot","layer":"manual","domain":"Quality & Compliance","pa":"Incoming Quality Control","paCode":"QCI","actor":"QC Supervisor","goal":"To formally decide whether a lot may be used in production.","startEvent":"","flow":["QC Supervisor reviews the completed QC Test Record.","QC Supervisor signs the Lot Release Certificate or the Rejection Note.","QC Supervisor replaces the Quarantine Label with a Released Label."],"inputs":[{"name":"QC Test Record","type":"","status":"Completed","party":"","filed":false},{"name":"Quarantine Label","type":"","status":"Quarantined","party":"","filed":false}],"outputs":[{"name":"QC Test Record","type":"","status":"","party":"","filed":true},{"name":"Lot Release Certificate","type":"","status":"Signed","party":"","filed":false},{"name":"Rejection Note","type":"","status":"","party":"Supplier","filed":false},{"name":"Quarantine Label","type":"","status":"Released","party":"","filed":false}],"rules":["Only the QC Supervisor may sign a Lot Release Certificate."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-whs-01":{"code":"WHS-01","name":"Put Away Released Material","layer":"computerized","domain":"Supply Chain","pa":"Warehouse Management","paCode":"WHS","actor":"Warehouse Staff","goal":"To store released material in a known location so it can be picked.","startEvent":"","flow":["Warehouse Staff opens released lots awaiting put-away.","Warehouse Staff records the storage bin for each lot.","Warehouse Staff confirms put-away, increasing available stock."],"inputs":[{"name":"Lot Release","type":"Approval Record","status":"Approved","party":"","filed":false},{"name":"Material Lot","type":"Transaction Data","status":"Released","party":"","filed":false},{"name":"Storage Bin","type":"Master Data","status":"","party":"","filed":false}],"outputs":[{"name":"Material Lot","type":"Transaction Data","status":"Available","party":"","filed":false},{"name":"Stock Movement","type":"Transaction Data","status":"","party":"","filed":false}],"rules":["Only lots with status Released can be put away."],"support":"Manual","supportApp":"","pains":["Bin location kept in supervisor's notebook"],"replaces":[{"document":"Quarantine Label","entity":"Material Lot"},{"document":"Lot Release Certificate","entity":"Lot Release"}],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-whs-02":{"code":"WHS-02","name":"Pick Material for Compounding Batch","layer":"computerized","domain":"Supply Chain","pa":"Warehouse Management","paCode":"WHS","actor":"Warehouse Staff","goal":"To issue the exact materials required by a compounding batch using FEFO.","startEvent":"","flow":["Warehouse Staff opens the submitted Material Requisition.","Warehouse Staff picks lots suggested by FEFO.","Warehouse Staff confirms issue, recording stock movements."],"inputs":[{"name":"Material Requisition","type":"Transaction Data","status":"Submitted","party":"","filed":false},{"name":"Material Lot","type":"Transaction Data","status":"Available","party":"","filed":false}],"outputs":[{"name":"Material Requisition","type":"Transaction Data","status":"Issued","party":"","filed":false},{"name":"Material Lot","type":"Transaction Data","status":"Available","party":"","filed":false},{"name":"Stock Movement","type":"Transaction Data","status":"","party":"","filed":false}],"rules":["Lots must be issued First-Expired-First-Out."],"support":"Manual","supportApp":"","pains":["Wrong lot issued occasionally"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-whs-03":{"code":"WHS-03","name":"Perform Cycle Count","layer":"computerized","domain":"Supply Chain","pa":"Warehouse Management","paCode":"WHS","actor":"Inventory Controller","goal":"To keep recorded stock equal to physical stock.","startEvent":"Weekly schedule","flow":["Inventory Controller generates the count list.","Inventory Controller records counted quantities.","Inventory Controller approves adjustments."],"inputs":[],"outputs":[{"name":"Stock Count","type":"Transaction Data","status":"","party":"","filed":false},{"name":"Stock Adjustment","type":"Transaction Data","status":"Approved","party":"","filed":false}],"rules":["Adjustments above 2% require Plant Manager approval."],"support":"Spreadsheet","supportApp":"","pains":["Stock card and Excel disagree"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-prd-01":{"code":"PRD-01","name":"Plan Compounding Batches","layer":"computerized","domain":"Production","pa":"Compounding","paCode":"PRD","actor":"Production Planner","goal":"To schedule compounding batches that meet customer demand.","startEvent":"","flow":["Production Planner reviews confirmed sales orders.","Production Planner creates batch orders per formula.","Production Planner releases the batch schedule."],"inputs":[{"name":"Sales Order","type":"Transaction Data","status":"Confirmed","party":"","filed":false},{"name":"Fragrance Formula","type":"Master Data","status":"","party":"","filed":false}],"outputs":[{"name":"Batch Order","type":"Transaction Data","status":"Released","party":"","filed":false}],"rules":["A batch order must reference an approved formula version."],"support":"Spreadsheet","supportApp":"","pains":["Plan rebuilt manually every day"],"replaces":[{"document":"Production Plan Sheet","entity":"Batch Order"}],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-prd-02":{"code":"PRD-02","name":"Request Materials for Batch","layer":"computerized","domain":"Production","pa":"Compounding","paCode":"PRD","actor":"Compounding Supervisor","goal":"To request the materials needed for a released batch.","startEvent":"","flow":["Compounding Supervisor opens the released batch order.","Compounding Supervisor creates a material requisition from the formula.","Compounding Supervisor submits the requisition."],"inputs":[{"name":"Batch Order","type":"Transaction Data","status":"Released","party":"","filed":false}],"outputs":[{"name":"Material Requisition","type":"Transaction Data","status":"Submitted","party":"","filed":false}],"rules":["Requisition quantity equals formula quantity times batch size."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-prd-03":{"code":"PRD-03","name":"Record Compounding Execution","layer":"computerized","domain":"Production","pa":"Compounding","paCode":"PRD","actor":"Compounder","goal":"To record actual materials and steps used in a batch for traceability.","startEvent":"","flow":["Compounder opens the batch with issued materials.","Compounder records actual weights per material lot and process parameters.","Compounder completes the batch record."],"inputs":[{"name":"Material Requisition","type":"Transaction Data","status":"Issued","party":"","filed":false},{"name":"Batch Order","type":"Transaction Data","status":"Released","party":"","filed":false}],"outputs":[{"name":"Batch Order","type":"Transaction Data","status":"Compounded","party":"","filed":false},{"name":"Batch Record","type":"Transaction Data","status":"Completed","party":"","filed":false}],"rules":["Weight deviation above 0.5% must be justified."],"support":"Manual","supportApp":"","pains":["Batch records on paper, hard to trace lots"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-sls-01":{"code":"SLS-01","name":"Register Customer","layer":"computerized","domain":"Sales & Customer","pa":"Sales Order Management","paCode":"SLS","actor":"Sales Admin","goal":"To maintain accurate customer master data.","startEvent":"New customer approved by Sales Manager","flow":["Sales Admin enters customer details.","Sales Admin attaches the signed customer agreement.","Sales Admin activates the customer."],"inputs":[{"name":"Customer Agreement","type":"Attachment","status":"","party":"Customer","filed":false}],"outputs":[{"name":"Customer","type":"Master Data","status":"Active","party":"","filed":false}],"rules":["Tax ID is mandatory for every customer."],"support":"Spreadsheet","supportApp":"","pains":["Duplicate customers in different Excel files"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-sls-02":{"code":"SLS-02","name":"Enter and Confirm Sales Order","layer":"computerized","domain":"Sales & Customer","pa":"Sales Order Management","paCode":"SLS","actor":"Sales Admin","goal":"To capture customer orders and confirm delivery dates.","startEvent":"","flow":["Sales Admin enters the order against the customer.","Sales Admin checks credit status.","Sales Admin confirms the sales order."],"inputs":[{"name":"Customer PO","type":"Attachment","status":"","party":"Customer","filed":false},{"name":"Customer","type":"Master Data","status":"Active","party":"","filed":false},{"name":"Finished Product","type":"Master Data","status":"","party":"","filed":false}],"outputs":[{"name":"Sales Order","type":"Transaction Data","status":"Confirmed","party":"","filed":false}],"rules":["Orders for customers over credit limit need Finance approval."],"support":"Spreadsheet","supportApp":"","pains":["Credit status checked by phone"],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-sls-03":{"code":"SLS-03","name":"Issue Delivery Order","layer":"computerized","domain":"Sales & Customer","pa":"Sales Order Management","paCode":"SLS","actor":"Sales Admin","goal":"To authorize shipment of finished goods to the customer.","startEvent":"","flow":["Sales Admin selects sales orders whose batches passed final QC.","Sales Admin creates the delivery order.","Sales Admin prints the delivery documents."],"inputs":[{"name":"Sales Order","type":"Transaction Data","status":"Confirmed","party":"","filed":false},{"name":"Batch Order","type":"Transaction Data","status":"QC Released","party":"","filed":false}],"outputs":[{"name":"Sales Order","type":"Transaction Data","status":"Delivered","party":"","filed":false},{"name":"Delivery Order","type":"Transaction Data","status":"Shipped","party":"Customer","filed":false},{"name":"Delivery Order","type":"Transaction Data","status":"Shipped","party":"","filed":false}],"rules":["Delivery quantity cannot exceed ordered quantity."],"support":"Manual","supportApp":"","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"},"demo-fin-01":{"code":"FIN-01","name":"Issue Customer Invoice","layer":"computerized","domain":"Finance","pa":"Accounts Receivable","paCode":"FIN","actor":"AR Officer","goal":"To bill customers for delivered goods.","startEvent":"","flow":["AR Officer selects shipped delivery orders.","AR Officer creates the customer invoice.","AR Officer sends the invoice to the customer."],"inputs":[{"name":"Delivery Order","type":"Transaction Data","status":"Shipped","party":"","filed":false},{"name":"Customer","type":"Master Data","status":"Active","party":"","filed":false}],"outputs":[{"name":"Customer Invoice","type":"Transaction Data","status":"Issued","party":"Customer","filed":false}],"rules":["Invoice must be issued within 1 working day of shipment."],"support":"Application","supportApp":"Accounting package","pains":[],"replaces":[],"source":{"interviewee":"Contoh","role":"Data contoh","date":"2026-09-18"},"review":"reviewed","sample":true,"createdAt":"2026-09-18T09:00:00.000Z","updatedAt":"2026-09-18T09:00:00.000Z"}},"settings":{"org":"PT Aroma Nusantara (contoh)","domains":{"Sales & Customer":{"order":1,"group":"Core"},"Supply Chain":{"order":2,"group":"Core"},"Production":{"order":3,"group":"Core"},"Quality & Compliance":{"order":4,"group":"Support"},"Finance":{"order":5,"group":"Support"}},"doc2ent":{}}};
+const sampleCount = () => [...S.bucs.values()].filter(b=>b.sample).length;
+async function loadSample(){
+  if(!SAMPLE) return;
+  const n = Object.keys(SAMPLE.bucs).length;
+  const shared = S.mode==='shared';
+  const ok = await ask({title:'Muat data contoh?', body:`${n} BUC contoh pabrik fragrance (PT Aroma Nusantara) akan ditambahkan: campuran as-is manual dan to-be aplikasi, lengkap dengan sambungan, celah, dan kandidat sistem.${shared?' <b>Data ini terlihat oleh semua anggota tim</b> yang membuka aplikasi.':''} BUC contoh diberi tanda “Contoh” dan bisa dihapus sekaligus tanpa menyentuh BUC Anda.`, okLabel:'Muat data contoh'});
+  if(!ok) return;
+  const ops = Object.entries(SAMPLE.bucs).map(([id,b])=>({id, buc:Object.assign(clone(b), {sample:true})}));
+  toast('Memuat data contoh…');
+  const done = await Store.bulk(ops);
+  const patch = {}; const dom = clone(S.settings.domains||{}); let ch = false;
+  for(const [k,v] of Object.entries(SAMPLE.settings.domains||{})) if(!dom[k]){ dom[k] = v; ch = true; }
+  if(ch) patch.domains = dom; if(!S.settings.org) patch.org = SAMPLE.settings.org;
+  if(Object.keys(patch).length) await Store.saveSettings(patch);
+  toast(`${done} BUC contoh dimuat.`); S.layer = 'all'; S.repo = null; go('#/');
+}
+async function removeSample(){
+  const ids = [...S.bucs.entries()].filter(([,b])=>b.sample).map(([id])=>id);
+  if(!ids.length){ toast('Tidak ada data contoh.'); return; }
+  const ok = await ask({title:`Hapus ${ids.length} BUC contoh?`, body:'Hanya BUC bertanda “Contoh” yang dihapus. BUC hasil wawancara Anda tidak tersentuh.', okLabel:'Hapus data contoh', danger:true});
+  if(!ok) return;
+  const n = await Store.bulk(ids.map(id=>({id, del:true})));
+  if(S.settings.org === (SAMPLE && SAMPLE.settings.org)) await Store.saveSettings({org:''});
+  toast(`${n} BUC contoh dihapus.`); render();
+}
+
+// ================= events & init =================
+document.addEventListener('click', async e=>{
+  const t = e.target.closest('button, [data-open], [data-go]'); if(!t) return;
+  if(t.id==='menuBtn'){ $('#rail').classList.toggle('open'); return; }
+  if(t.dataset.go){ e.preventDefault(); go(t.dataset.go); return; }
+  if(t.dataset.open){ const id = t.dataset.open; const b = S.bucs.get(id); if(!b) return; if(S.layer!=='all' && b.layer!==S.layer) S.layer='all'; const p = analyze().paOf(id); go('#/area/'+encodeURIComponent(p.code)+'/'+id); return; }
+  if(t.dataset.layer){ S.layer = t.dataset.layer; S.repo = null; render(); return; }
+  if(t.dataset.newIn){ S.newInPa = t.dataset.newIn; ED = null; go('#/new'); return; }
+  if(t.dataset.dup){ const src = S.bucs.get(t.dataset.dup); const b = normalizeBuc(clone(src)); delete b.createdAt; delete b.createdBy; b.code = ''; b.name = b.name + ' (salinan)'; b.review = 'draft'; S.editing = {buc:b}; ED = null; go('#/new'); return; }
+  if(t.dataset.ed){ edAction(t); return; }
+  if(t.dataset.fix){ applyFix(t.dataset.fix); return; }
+  if(t.dataset.ai){ aiAction(t); return; }
+  if(t.dataset.aiLayer){ AI.layer = t.dataset.aiLayer; viewInterview($('#main')); return; }
+  if(t.dataset.rn){ renameAction(t); return; }
+  if(t.dataset.merge){ const ok = await ask({title:'Gabungkan nama?', body:`Semua “${esc(t.dataset.from)}” diganti menjadi “${esc(t.dataset.to)}”.`, okLabel:'Gabungkan'}); if(ok) renameEverywhere(t.dataset.merge, t.dataset.from, t.dataset.to); return; }
+  if(t.dataset.exp){ exportAction(t.dataset.exp); return; }
+  if(t.dataset.themeSet){ applyTheme(t.dataset.themeSet); return; }
+  if(t.dataset.sample==='load'){ if(S.canWrite) loadSample(); return; }
+  if(t.dataset.sample==='remove'){ if(S.canWrite) removeSample(); return; }
+});
+document.addEventListener('keydown', e=>{ const tr = e.target.closest && e.target.closest('tr[data-open]'); if(tr && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); tr.click(); } });
+let lastHash = location.hash, restoring = false;
+window.addEventListener('hashchange', async ()=>{
+  if(restoring){ restoring = false; lastHash = location.hash; return; }
+  const leavingEditor = ED && ED.dirty && ED.route === lastHash && location.hash !== lastHash;
+  if(leavingEditor){ const target = location.hash; restoring = true; location.hash = lastHash;
+    if(await ask({title:'Tinggalkan tanpa menyimpan?', body:'Perubahan pada BUC ini belum disimpan.', okLabel:'Tinggalkan', danger:true})){ ED = null; location.hash = target; } return; }
+  if(ED && ED.route !== location.hash) ED = null;
+  lastHash = location.hash; render();
+});
+Store.onChange(()=>{
+  const r = parseRoute();
+  if(r.name==='new' || r.name==='edit'){ renderNav(); fillDatalists(); renderConn(); return; }
+  if(r.name==='interview'){ renderNav(); const ae = document.activeElement; const id = ae && ae.id; const pos = ae && ae.selectionStart;
+    if(!AI.busy){ viewInterview($('#main')); if(id){ const el = document.getElementById(id); if(el){ el.focus(); try{ if(pos!=null) el.setSelectionRange(pos,pos); }catch(e){} } } } return; }
+  if(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && r.name!=='map'){ renderNav(); return; }
+  render();
+});
+try{ const t = localStorage.getItem('atlas-theme'); if(t && t!=='auto') document.documentElement.setAttribute('data-theme', t); }catch(e){}
+render();
+Store.init();
+})();
+
+</script>
+</body>
+</html>
